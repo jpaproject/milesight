@@ -10,6 +10,8 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    @stack('styles')
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -47,6 +49,8 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
         <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
+
+    @stack('scripts')
 </body>
 
 </html>

@@ -32,9 +32,10 @@
             </button>
             <!-- Hamburger Toggle BTN -->
 
+            {{-- Logo Mobile --}}
             <a href="index.html" class="lg:hidden">
-                <img class="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
+                <img class="dark:hidden" src={{ asset('assets/images/logo.svg') }} alt="Logo" />
+                <img class="hidden dark:block" src={{ asset('assets/images/logo-dark.svg') }} alt="Logo" />
             </a>
 
             <!-- Application nav menu button -->
