@@ -5,69 +5,28 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
         <style>
-            .dataTables_paginate .paginate_button.disabled {
-                @apply opacity-50 cursor-not-allowed hover:bg-transparent;
+            .modal-backdrop {
+                backdrop-filter: blur(8px);
             }
 
-            .dataTables_info {
-                @apply text-sm text-gray-600;
+            .modal-content {
+                animation: modalSlideIn 0.3s ease-out;
             }
 
-            /* Table styling */
-            table.dataTable {
-                @apply w-full border-collapse;
+            @keyframes modalSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
             }
 
-            table.dataTable thead th {
-                @apply bg-gray-50 border-b-2 border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-            }
-
-            table.dataTable tbody td {
-                @apply px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-b border-gray-200;
-            }
-
-            table.dataTable tbody tr:hover {
-                @apply bg-gray-50;
-            }
-
-            /* Buttons styling */
-            .dt-buttons {
-                @apply mb-4 flex flex-wrap gap-2;
-            }
-
-            .dt-button {
-                @apply px-4 py-2 text-sm font-medium rounded-md border focus:outline-none focus:ring-2 focus:ring-offset-2;
-            }
-
-            .dt-button:not(.disabled) {
-                @apply cursor-pointer;
-            }
-
-            .dt-button .buttons-collection {
-                background-color: "blue" !important;
-            }
-
-
-            /* Loading */
-            .dataTables_processing {
-                @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-lg shadow-lg px-6 py-4 text-sm font-medium text-gray-700;
-            }
-
-            /* Responsive */
-            .dtr-details {
-                @apply bg-gray-50;
-            }
-
-            .status-badge {
-                @apply px-2 py-1 text-xs font-medium rounded-full;
-            }
-
-            .status-active {
-                @apply bg-green-100 text-green-800;
-            }
-
-            .status-inactive {
-                @apply bg-red-100 text-red-800;
+            .form-input:focus {
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             }
         </style>
     @endpush
@@ -77,23 +36,28 @@
         <x-breadcrumb />
     </div>
 
+    @session('success')
+        <x-success-alert message="{{ session('success') }}" />
+    @endsession
 
-    <div
-        class="mt-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+
+    <div x-data="{ createModal: {{ session('show_create_modal') ? 'true' : 'false' }} }"
+        class ="mt-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800
+        dark:bg-white/[0.03] overflow-hidden shadow-md">
         <div class="px-6 py-4 mb-5">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">User List</h3>
                 <div class="flex items-center gap-2">
                     <button onclick="refreshTable()"
-                        class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                         Refresh
                     </button>
-                    <button
-                        class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm leading-4 text-sm font-medium text-white bg-brand-500 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button @click="createModal = true"
+                        class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg shadow-sm leading-4 text-sm font-medium text-white bg-brand-500 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
@@ -106,7 +70,7 @@
         </div>
 
         <div class="overflow-x-auto px-6 py-4">
-            <table id="usersTable" class="min-w-full  border dark:border-gray-600 rounded">
+            <table id="usersTable" class="min-w-full border dark:border-gray-600 rounded">
                 <thead class="bg-gray-200 dark:bg-gray-800">
                     <tr>
                         <th scope="col"
@@ -131,7 +95,7 @@
                 </thead>
                 <tbody class="bg-white dark:bg-transparent">
                     @foreach ($users as $index => $user)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center dark:text-white">
                                 {{ $index + 1 }}
                             </td>
@@ -172,6 +136,85 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Modal -->
+        <div x-show="createModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute inset-0 z-50 flex items-end justify-center bg-black/60 modal-backdrop">
+
+            <div @click.outside="createModal = false" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                class="bg-white rounded-2xl  w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] mb-10 overflow-auto scroll-thin">
+
+                <form method="POST" action={{ route('users.store') }} class="p-6 space-y-4 ">
+                    @csrf
+                    <h2 class="text-md font-semibold text-gray-800">Create New User</h2>
+
+                    @error('error')
+                        <x-error-alert message="{{ $message }}" />
+                    @enderror
+
+
+                    <div>
+                        <x-input-label for="name" :value="__('Name')" required class="text-xs" />
+                        <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
+                            :value="old('name')" required autofocus autocomplete="name" placeholder="Enter the name" />
+                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="email" :value="__('Email')" required class="text-xs" />
+                        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
+                            :value="old('email')" required autocomplete="email" placeholder="Enter the Email" />
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="password" :value="__('Password')" required class="text-xs" />
+                        <x-password-input id="password" class="block mt-1 w-full" name="password" required
+                            autocomplete="current-password" placeholder="Enter the password" />
+                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="username" :value="__('Username')" required class="text-xs" />
+                        <x-text-input id="username" class="block mt-1 w-full" type="text" name="username"
+                            :value="old('username')" required autofocus autocomplete="username"
+                            placeholder="Enter the username" />
+                        <x-input-error :messages="$errors->get('username')" class="mt-2" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <x-input-label for="role" :value="__('Role')" required class="text-xs" />
+                        <select name="role" id="role"
+                            class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            <option value="">-- Select Role --</option>
+                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>👑 Admin</option>
+                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>👤 User</option>
+                        </select>
+                        <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                        <button type="button" @click="createModal = false"
+                            class="px-4 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                            Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
 

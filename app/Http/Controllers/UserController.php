@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -28,9 +31,27 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'role' => $request->role,
+                'password' => Hash::make($request->password),
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'User created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Failed to create user. Please try again.'])->withInput()
+                ->with('show_create_modal', true);
+        }
     }
 
     /**

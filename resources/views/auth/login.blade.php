@@ -41,7 +41,7 @@
 
                                 <!-- Password -->
                                 <div>
-                                    <x-input-label for="login" :value="__('Password')" required />
+                                    <x-input-label for="password" :value="__('Password')" required />
                                     <x-password-input id="password" class="block mt-1 w-full" name="password" required
                                         autocomplete="current-password" placeholder="Enter your password" />
                                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
