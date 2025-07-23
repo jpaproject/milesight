@@ -40,8 +40,12 @@
         <x-success-alert message="{{ session('success') }}" />
     @endsession
 
+    @error('error')
+        <x-error-alert message="{{ $message }}" />
+    @enderror
 
-    <div x-data="{ createModal: {{ session('show_create_modal') ? 'true' : 'false' }} }"
+
+    <div x-data="{ createModal: {{ session('show_create_modal') ? 'true' : 'false' }}, deleteModal: false, userId: null }"
         class ="mt-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800
         dark:bg-white/[0.03] overflow-hidden shadow-md">
         <div class="px-6 py-4 mb-5">
@@ -122,7 +126,14 @@
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button onclick="deleteUser({{ $user->id }})"
+                                    {{-- <button onclick="deleteUser({{ $user->id }})"
+                                        class="text-red-600 hover:text-red-900" title="Delete">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button> --}}
+                                    <button @click="deleteModal = true; userId = {{ $user->id }}"
                                         class="text-red-600 hover:text-red-900" title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -212,6 +223,42 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <div x-show="deleteModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 modal-backdrop">
+
+            <div @click.outside="deleteModal = false" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                class="bg-white rounded-2xl  w-full max-w-md mx-4 shadow-2xl modal-content">
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Confirm Deletion</h2>
+                    <p class="text-gray-600 dark:text-gray-300">Are you sure you want to delete this user?</p>
+
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button @click="deleteModal = false"
+                            class="px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                            Batal
+                        </button>
+                        <form method="POST" :action="`/users/${userId}`">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -13,7 +13,7 @@ Route::get('/dashboard-example', function () {
 })->middleware(['auth', 'verified'])->name('dashboard-example');
 
 Route::middleware('auth')->group(function () {
-    Route::resource('users', UserController::class)->only(['index', 'store']);
+    Route::resource('users', UserController::class)->only(['index', 'store', 'destroy']);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
