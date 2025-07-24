@@ -311,6 +311,14 @@ layer(base);
   color: #111827 !important; /* optional: Tailwind slate-900 */
 }
 
+table.dataTable.no-footer {
+    @apply border-b-gray-200 dark:border-b-gray-600;
+}
+
+.dataTables_wrapper .dataTables_info {
+    @apply text-gray-500 dark:text-slate-200;
+}
+
 .dataTables_filter{
     @apply text-gray-500 dark:text-slate-200;
 }

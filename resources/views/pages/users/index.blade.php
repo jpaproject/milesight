@@ -1,6 +1,5 @@
 <x-app-layout>
     @push('styles')
-        <!-- DataTables CSS - Default Style (bukan Bootstrap) -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
@@ -126,13 +125,6 @@
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    {{-- <button onclick="deleteUser({{ $user->id }})"
-                                        class="text-red-600 hover:text-red-900" title="Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button> --}}
                                     <button @click="deleteModal = true; userId = {{ $user->id }}"
                                         class="text-red-600 hover:text-red-900" title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +155,7 @@
                 x-transition:leave-end="opacity-0 scale-95 translate-y-4"
                 class="bg-white rounded-2xl  w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] mb-10 overflow-auto scroll-thin">
 
-                <form method="POST" action={{ route('users.store') }} class="p-6 space-y-4 ">
+                <form method="POST" action={{ route('users.store') }} class="p-6 space-y-4 bg-white">
                     @csrf
                     <h2 class="text-md font-semibold text-gray-800">Create New User</h2>
 
@@ -247,14 +239,14 @@
                     <div class="mt-6 flex justify-end gap-2">
                         <button @click="deleteModal = false"
                             class="px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                            Batal
+                            Cancel
                         </button>
                         <form method="POST" :action="`/users/${userId}`">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                 class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                Hapus
+                                Delete
                             </button>
                         </form>
                     </div>
