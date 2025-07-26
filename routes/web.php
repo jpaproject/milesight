@@ -14,10 +14,12 @@ Route::get('/dashboard-example', function () {
     return view('dashboard-example');
 })->middleware(['auth', 'verified'])->name('dashboard-example');
 
+Route::view('/home', 'pages.home')->name('home');
+
 Route::middleware('auth')->group(function () {
-    Route::resource('areas', AreaController::class)->only(['index', 'store', 'destroy']);
-    Route::resource('devices', DeviceController::class)->only(['index', 'store', 'destroy']);
-    Route::resource('users', UserController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('areas', AreaController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('devices', DeviceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('users', UserController::class)->only(['index', 'store', 'edit', 'update',  'destroy']);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

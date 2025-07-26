@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDeviceRequest;
+use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Area;
 use App\Models\Device;
 use Illuminate\Http\Request;
@@ -64,17 +65,38 @@ class DeviceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Device $device)
     {
-        //
+        $areas = Area::pluck('name', 'id');
+        return view('pages.devices.edit', compact('device', 'areas'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateDeviceRequest $request, string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $device = Device::findOrFail($id);
+
+            $device->update([
+                'area_id'   => $request->input('area_id'),
+                'name'      => $request->input('name'),
+                'topic'     => $request->input('topic'),
+                'is_active' => $request->input('is_active'),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('devices.index')->with('success', 'Device updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to update device. Please try again.'])
+                ->withInput();
+        }
     }
 
     /**
