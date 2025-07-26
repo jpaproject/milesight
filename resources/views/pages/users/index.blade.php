@@ -118,13 +118,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <button onclick="editUser({{ $user->id }})"
+                                    <a href="{{ route('users.edit', $user->id) }}"
                                         class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
-                                    </button>
+                                    </a>
                                     <button @click="deleteModal = true; userId = {{ $user->id }}"
                                         class="text-red-600 hover:text-red-900" title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,11 +153,11 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-                class="bg-white rounded-2xl  w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] mb-10 overflow-auto scroll-thin">
+                class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] mb-10 overflow-auto scroll-thin">
 
-                <form method="POST" action={{ route('users.store') }} class="p-6 space-y-4 bg-white">
+                <form method="POST" action={{ route('users.store') }} class="p-6 space-y-4">
                     @csrf
-                    <h2 class="text-md font-semibold text-gray-800">Create New User</h2>
+                    <h2 class="text-md font-semibold text-gray-800 dark:text-white">Create New User</h2>
 
                     @error('error')
                         <x-error-alert message="{{ $message }}" />
@@ -196,7 +196,7 @@
                     <div class="space-y-2">
                         <x-input-label for="role" :value="__('Role')" required class="text-xs" />
                         <select name="role" id="role"
-                            class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
                             <option value="">-- Select Role --</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>👑 Admin</option>
                             <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>👤 User</option>
@@ -204,7 +204,7 @@
                         <x-input-error :messages="$errors->get('role')" class="mt-2" />
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <div class="flex justify-end space-x-3 pt-4">
                         <button type="button" @click="createModal = false"
                             class="px-4 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                             Cancel

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,17 +66,39 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+        return view('pages.users.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $data = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'role' => $request->role,
+            ];
+
+            // Hanya update password jika ada input baru
+            if (!empty($request->password)) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user->update($data);
+
+            DB::commit();
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to update user. Please try again.'])
+                ->withInput();
+        }
     }
 
     /**
