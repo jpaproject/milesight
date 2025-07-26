@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAreaRequest;
+use App\Http\Requests\UpdateAreaRequest;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,17 +60,34 @@ class AreaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Area $area)
     {
-        //
+        return view('pages.areas.edit', compact('area'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAreaRequest $request, string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $device = Area::findOrFail($id);
+
+            $device->update([
+                'name'      => $request->input('name'),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('areas.index')->with('success', 'Area updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to update area. Please try again.'])
+                ->withInput();
+        }
     }
 
     /**

@@ -73,13 +73,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <button onclick="editArea({{ $area->id }})"
+                                    <a href="{{ route('areas.edit', $area->id) }}"
                                         class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
-                                    </button>
+                                    </a>
                                     <button @click="deleteModal = true; areaId = {{ $area->id }}"
                                         class="text-red-600 hover:text-red-900" title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,11 +108,11 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-                class="bg-white rounded-2xl  w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] overflow-auto scroll-thin">
+                class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] overflow-auto scroll-thin">
 
-                <form method="POST" action='' class="p-6 space-y-4 bg-white">
+                <form method="POST" action='' class="p-6 space-y-4">
                     @csrf
-                    <h2 class="text-md font-semibold text-gray-800">Create New Area</h2>
+                    <h2 class="text-md font-semibold text-gray-800 dark:text-white">Create New Area</h2>
 
                     @error('error')
                         <x-error-alert message="{{ $message }}" />
@@ -127,7 +127,7 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <div class="flex justify-end space-x-3 pt-4">
                         <button type="button" @click="createModal = false"
                             class="px-4 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                             Cancel
