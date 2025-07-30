@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'mqtt' => [
+        'api_key' => env('MQTT_SERVICE_API_KEY'),
+    ],
+
 ];
