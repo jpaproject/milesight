@@ -1,14 +1,15 @@
 <?php
 
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard-example', function () {
     return view('dashboard-example');
@@ -17,6 +18,7 @@ Route::get('/dashboard-example', function () {
 Route::view('/home', 'pages.home')->name('home');
 
 Route::middleware('auth')->group(function () {
+    Route::resource('dashboard', DashboardController::class)->only(['index', 'show']);
     Route::resource('areas', AreaController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('devices', DeviceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('users', UserController::class)->only(['index', 'store', 'edit', 'update',  'destroy']);

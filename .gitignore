@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+/middleware/websocket_server/node_modules
+/middleware/mqtt_client/node_modules
+/middleware/testing/node_modules

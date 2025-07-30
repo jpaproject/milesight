@@ -15,4 +15,9 @@ class Area extends Model
     {
         return $this->hasMany(Device::class);
     }
+
+    public function deviceReadings(): HasMany
+    {
+        return $this->hasMany(DeviceReading::class);
+    }
 }

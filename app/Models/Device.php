@@ -18,4 +18,9 @@ class Device extends Model
     {
         return $this->belongsTo(Area::class);
     }
+
+    public function deviceReadings()
+    {
+        return $this->hasMany(DeviceReading::class);
+    }
 }

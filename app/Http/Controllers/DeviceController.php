@@ -8,6 +8,7 @@ use App\Models\Area;
 use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DeviceController extends Controller
 {
@@ -117,6 +118,16 @@ class DeviceController extends Controller
             DB::rollBack();
 
             return redirect()->back()->withErrors(['error' => 'Failed to delete device. Please try again.']);
+        }
+    }
+
+    public function checkDeviceExists(Request $request)
+    {
+        $device = Device::where('name', $request->name)->first();
+        if ($device) {
+            return response()->json(true);
+        } else {
+            return response()->json(false);
         }
     }
 }
