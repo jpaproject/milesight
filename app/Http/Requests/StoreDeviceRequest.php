@@ -26,7 +26,6 @@ class StoreDeviceRequest extends FormRequest
         return [
             'area_id' => 'required|exists:areas,id',
             'name' => 'required|string|max:255|unique:devices,name',
-            'topic' => 'required|string|max:255',
             'is_active' => 'required|boolean',
         ];
     }

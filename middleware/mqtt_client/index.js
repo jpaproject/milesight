@@ -15,7 +15,7 @@ let lastMessageTime = null;
 let dataBuffer = [];
 
 const deviceCache = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_TTL = 1 * 60 * 1000;
 
 const deviceMap = new Map();
 

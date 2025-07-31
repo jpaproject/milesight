@@ -10,7 +10,6 @@ class Device extends Model
     protected $fillable = [
         'area_id',
         'name',
-        'topic',
         'is_active',
     ];
 

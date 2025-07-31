@@ -40,7 +40,6 @@ class DeviceController extends Controller
             Device::create([
                 'area_id' => $request->input('area_id'),
                 'name' => $request->input('name'),
-                'topic' => $request->input('topic'),
                 'is_active' => $request->input('is_active')
             ]);
 
@@ -84,7 +83,6 @@ class DeviceController extends Controller
             $device->update([
                 'area_id'   => $request->input('area_id'),
                 'name'      => $request->input('name'),
-                'topic'     => $request->input('topic'),
                 'is_active' => $request->input('is_active'),
             ]);
 
