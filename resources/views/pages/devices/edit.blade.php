@@ -36,14 +36,6 @@
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
-            <div>
-                <x-input-label for="topic" :value="__('Topic')" required class="text-xs" />
-                <x-text-input id="topic" class="block mt-1 w-full" type="text" name="topic" :value="old('topic', $device->topic)"
-                    required autocomplete="topic" placeholder="Enter the topic" />
-                <x-input-error :messages="$errors->get('topic')" class="mt-2" />
-            </div>
-
-
             <div class="space-y-2">
                 <x-input-label for="is_active" :value="__('Status')" required class="text-xs" />
                 <select name="is_active" id="is_active"

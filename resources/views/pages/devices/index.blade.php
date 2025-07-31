@@ -86,9 +86,6 @@
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Device Name</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-normal">
-                            Topic</th>
-                        <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Status</th>
                         <th scope="col"
@@ -109,9 +106,6 @@
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
                                 {{ $device->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center dark:text-white">
-                                {{ $device->topic }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center dark:text-white capitalize">
@@ -184,13 +178,6 @@
                         <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
                             :value="old('name')" required autofocus autocomplete="name" placeholder="Enter the name" />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                    </div>
-
-                    <div>
-                        <x-input-label for="topic" :value="__('Topic')" required class="text-xs" />
-                        <x-text-input id="topic" class="block mt-1 w-full" type="text" name="topic"
-                            :value="old('topic')" required autofocus autocomplete="topic" placeholder="Enter the topic" />
-                        <x-input-error :messages="$errors->get('topic')" class="mt-2" />
                     </div>
 
                     <div class="space-y-2">
@@ -286,7 +273,7 @@
                             className: 'text-center'
                         },
                         {
-                            targets: [5], // Aksi
+                            targets: [4], // Aksi
                             orderable: false,
                             searchable: false,
                             className: 'text-center'
