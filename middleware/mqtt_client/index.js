@@ -14,6 +14,11 @@ let socketClient = null;
 let lastMessageTime = null;
 let dataBuffer = [];
 
+const deviceCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000;
+
+const deviceMap = new Map();
+
 // ensuring that only authorized mqtt.js services can access specific API endpoints by including an API key with each request.
 const API_KEY = process.env.MQTT_SERVICE_API_KEY;
 
@@ -70,56 +75,98 @@ function validatePayload(payload) {
     return { valid: true };
 }
 
+// Helper untuk device check dengan cache
+async function isDeviceRegistered(deviceName) {
+    const cached = deviceCache.get(deviceName);
+
+    // Return dari cache jika masih valid
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.exists;
+    }
+
+    try {
+        const { data: deviceExists } = await apiRequest.get("/device-exists", {
+            params: { name: deviceName },
+            timeout: 5000,
+        });
+
+        // Simpan ke cache
+        deviceCache.set(deviceName, {
+            exists: deviceExists,
+            timestamp: Date.now(),
+        });
+
+        return deviceExists;
+    } catch (error) {
+        console.error(`Device check failed for ${deviceName}:`, error.message);
+        // Fallback ke cache lama jika ada
+        return cached ? cached.exists : false;
+    }
+}
+
+function updateDataBuffer(payload) {
+    const { deviceName } = payload;
+    const existingIndex = deviceMap.get(deviceName);
+
+    if (existingIndex !== undefined && dataBuffer[existingIndex]) {
+        // Update existing
+        dataBuffer[existingIndex] = payload;
+    } else {
+        // Add new
+        const newIndex = dataBuffer.length;
+        dataBuffer.push(payload);
+        deviceMap.set(deviceName, newIndex);
+    }
+}
+
 async function handleMQTTMessage(topic, message) {
     if (isShuttingDown) return;
 
+    let payload;
+
+    // Parse JSON dengan error handling yang lebih baik
     try {
-        const payload = JSON.parse(message.toString());
-        const validation = validatePayload(payload);
-
-        if (!validation.valid) {
-            console.warn(`Invalid payload from ${topic}:`, validation.reason);
-            return;
-        }
-
-        const { data: deviceExists } = await apiRequest.get("/device-exists", {
-            params: { name: payload.deviceName },
-        });
-
-        if (!deviceExists) {
-            console.warn(
-                `Device "${payload.deviceName}" not registered in DB. Ignored.`
-            );
-            return;
-        }
-
-        const enrichedPayload = {
-            ...payload,
-            receivedAt: new Date().toISOString(),
-        };
-
-        const index = dataBuffer.findIndex(
-            (d) => d.deviceName === enrichedPayload.deviceName
-        );
-
-        if (index !== -1) {
-            // deviceName ada → update data
-            dataBuffer[index] = enrichedPayload;
-        } else {
-            // deviceName tidak ada → tambahkan data baru
-            dataBuffer.push(enrichedPayload);
-        }
-
-        // Forward to WebSocket only if connected
-        if (socketClient?.connected) {
-            socketClient.emit("mqtt_data", enrichedPayload);
-            lastMessageTime = Date.now();
-        } else {
-            console.warn("WebSocket not connected, message dropped");
-        }
-    } catch (error) {
-        console.error(`Failed to parse message from ${topic}:`, error.message);
+        payload = JSON.parse(message.toString());
+    } catch (parseError) {
+        console.error(`Invalid JSON from ${topic}:`, parseError.message);
         return;
+    }
+
+    // Validasi payload
+    const validation = validatePayload(payload);
+    if (!validation.valid) {
+        console.warn(`Invalid payload from ${topic}:`, validation.reason);
+        return;
+    }
+
+    // Check deviceName exists
+    const { deviceName } = payload;
+    if (!deviceName) {
+        console.warn(`Missing deviceName from ${topic}`);
+        return;
+    }
+
+    const deviceExists = await isDeviceRegistered(deviceName);
+    if (!deviceExists) {
+        console.warn(`Device "${deviceName}" not registered. Ignored.`);
+        return;
+    }
+
+    // Create enriched payload
+    const enrichedPayload = {
+        ...payload,
+        receivedAt: new Date().toISOString(),
+    };
+
+    // Update buffer dengan optimized search
+    updateDataBuffer(enrichedPayload);
+
+    // Forward to WebSocket
+    if (socketClient?.connected) {
+        socketClient.emit("mqtt_data", enrichedPayload);
+        lastMessageTime = Date.now();
+    } else {
+        console.warn("WebSocket not connected, message dropped");
     }
 }
 
