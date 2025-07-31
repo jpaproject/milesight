@@ -1,8 +1,8 @@
 const mqtt = require("mqtt");
 
 // === Konfigurasi MQTT Broker ===
-const brokerUrl = "mqtt://broker.emqx.io:1883";
-const topic = "sensor/ambience";
+const brokerUrl = "mqtt://public.grootech.id:1883";
+const topic = "AP2/T1/Data";
 
 const deviceNames = [
     "BoardingLounge-B1-T1A-EM300-TH",
