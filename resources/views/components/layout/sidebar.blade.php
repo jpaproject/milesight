@@ -55,6 +55,25 @@
                     </li>
                     <!-- Menu Item Dashboard -->
 
+                    <!-- Menu Item Logs -->
+                    <li>
+                        <a href="{{ route('logs.index') }}"
+                            class="menu-item group {{ request()->routeIs('logs.index') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                            <svg class="{{ request()->routeIs('logs.index') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" width="24" height="24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
+                            </svg>
+
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Logs
+                            </span>
+                        </a>
+                    </li>
+                    <!-- Menu Item Logs -->
+
                     <!-- Menu Item Area Management -->
                     <li>
                         <a href="{{ route('areas.index') }}"
