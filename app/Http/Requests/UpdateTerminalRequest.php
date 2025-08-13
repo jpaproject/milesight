@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateAreaRequest extends FormRequest
+class UpdateTerminalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +21,10 @@ class UpdateAreaRequest extends FormRequest
      */
     public function rules(): array
     {
-        $areaId = $this->route('area');
+        $terminalId = $this->route('terminal');
 
         return [
-            'terminal_id' => 'required|exists:terminals,id',
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('areas')
-                    ->where(fn($query) => $query->where('terminal_id', $this->terminal_id))
-                    ->ignore($areaId),
-            ]
+            'name' => 'required|string|max:255|unique:terminals,name,' . $terminalId,
         ];
     }
 }

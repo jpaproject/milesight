@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAreaRequest;
 use App\Http\Requests\UpdateAreaRequest;
 use App\Models\Area;
+use App\Models\Terminal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AreaController extends Controller
 {
@@ -15,8 +17,9 @@ class AreaController extends Controller
      */
     public function index()
     {
-        $areas = Area::orderBy('created_at', 'desc')->get();
-        return view('pages.areas.index', compact('areas'));
+        $terminals = Terminal::pluck('name', 'id');
+        $areas = Area::with('terminal')->orderBy('created_at', 'desc')->get();
+        return view('pages.areas.index', compact('areas', 'terminals'));
     }
 
     /**
@@ -35,7 +38,8 @@ class AreaController extends Controller
         DB::beginTransaction();
         try {
             Area::create([
-                'name' => $request->name,
+                'terminal_id' => $request->input('terminal_id'),
+                'name' => $request->input('name'),
             ]);
 
             DB::commit();
@@ -62,7 +66,8 @@ class AreaController extends Controller
      */
     public function edit(Area $area)
     {
-        return view('pages.areas.edit', compact('area'));
+        $terminals = Terminal::pluck('name', 'id');
+        return view('pages.areas.edit', compact('area', 'terminals'));
     }
 
     /**
@@ -75,6 +80,7 @@ class AreaController extends Controller
             $device = Area::findOrFail($id);
 
             $device->update([
+                'terminal_id' => $request->input('terminal_id'),
                 'name'      => $request->input('name'),
             ]);
 
@@ -97,9 +103,9 @@ class AreaController extends Controller
     {
         DB::beginTransaction();
         try {
-            $user = Area::findOrFail($id);
+            $area = Area::findOrFail($id);
 
-            $user->delete();
+            $area->delete();
 
             DB::commit();
 

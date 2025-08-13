@@ -230,7 +230,7 @@
                         @foreach ($areas as $area)
                             <option value="{{ $area->name }}"
                                 {{ request('area_id') == $area->name ? 'selected' : '' }}>
-                                {{ $area->name }}
+                                {{ $area->terminal->name }} - {{ $area->name }}
                             </option>
                         @endforeach
                     </select>

@@ -55,6 +55,9 @@
                             No</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Terminal Name</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Area Name</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
@@ -66,6 +69,10 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center dark:text-white">
                                 {{ $index + 1 }}
+                            </td>
+                            <td
+                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
+                                {{ $area->terminal->name }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
@@ -125,6 +132,21 @@
                             :value="old('name')" required autofocus autocomplete="name"
                             placeholder="Enter the area name" />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <x-input-label for="terminal_id" :value="__('Terminal')" required class="text-xs" />
+
+                        <select name="terminal_id" id="terminal_id"
+                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                            <option value="">-- Select Terminal --</option>
+                            @foreach ($terminals as $id => $name)
+                                <option value="{{ $id }}" {{ old('terminal_id') == $id ? 'selected' : '' }}>
+                                    🏙️ {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('terminal_id')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end space-x-3 pt-4">
@@ -209,7 +231,7 @@
                             className: 'text-center'
                         },
                         {
-                            targets: [2], // Aksi
+                            targets: [3], // Aksi
                             orderable: false,
                             searchable: false,
                             className: 'text-center'
@@ -227,14 +249,14 @@
                                 extend: 'copy',
                                 text: '📋 Copy to clipboard',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4]
+                                    columns: [0, 1, 2]
                                 }
                             },
                             {
                                 extend: 'excel',
                                 text: '📄 Export as Excel',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4]
+                                    columns: [0, 1, 2]
                                 }
                             },
                             {
@@ -243,14 +265,14 @@
                                 orientation: 'landscape',
                                 pageSize: 'A4',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4]
+                                    columns: [0, 1, 2]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '🖨️ Print',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4]
+                                    columns: [0, 1, 2]
                                 }
                             }
                         ]

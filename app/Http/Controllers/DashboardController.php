@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Device;
+use App\Models\Terminal;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -13,8 +14,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $areas = Area::pluck('name', 'id');
-        return view('pages.dashboard.index', compact('areas'));
+        $terminals = Terminal::pluck('name', 'id');
+        return view('pages.dashboard.index', compact('terminals'));
     }
 
     /**
@@ -38,9 +39,10 @@ class DashboardController extends Controller
      */
     public function show(string $id)
     {
-        // $devices = Device::with('area')->where('area_id', $id)->get();
-        $area = Area::with('devices')->where('id', $id)->firstOrFail();
-        return view('pages.dashboard.show', compact('area'));
+        $terminal = Terminal::with([
+            'areas.devices'
+        ])->where('id', $id)->firstOrFail();
+        return view('pages.dashboard.show-by-terminal', compact('terminal'));
     }
 
     /**

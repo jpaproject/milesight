@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Area;
 use App\Models\Device;
+use App\Models\Terminal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,9 +18,12 @@ class DeviceController extends Controller
      */
     public function index()
     {
-        $areas = Area::pluck('name', 'id');
-        $devices = Device::with('area')->orderBy('created_at', 'desc')->get();
-        return view('pages.devices.index', compact('devices', 'areas'));
+        $terminals = Terminal::pluck('name', 'id');
+        $devices = Device::with(['area.terminal']) // ambil terminal lewat area
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pages.devices.index', compact('devices', 'terminals'));
     }
 
     /**
@@ -65,10 +69,15 @@ class DeviceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Device $device)
+    public function edit(string $id)
     {
-        $areas = Area::pluck('name', 'id');
-        return view('pages.devices.edit', compact('device', 'areas'));
+        $terminals = Terminal::pluck('name', 'id');
+        $device = Device::with(['area.terminal'])
+            ->orderBy('created_at', 'desc')
+            ->where('id', $id)
+            ->first();
+
+        return view('pages.devices.edit', compact('device', 'terminals'));
     }
 
     /**
