@@ -36,7 +36,8 @@
         </style>
     @endpush
 
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ $area->name }}</h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ $area->terminal->name }} / {{ $area->name }}
+    </h2>
 
     <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         @forelse ($area->devices as $device)

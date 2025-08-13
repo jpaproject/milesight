@@ -14,13 +14,43 @@ class AreaSeeder extends Seeder
     public function run(): void
     {
         DB::table('areas')->insert([
-            'name' => 'T1A',
+            'terminal_id' => 1,
+            'name' => 'CC Atas',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         DB::table('areas')->insert([
-            'name' => 'T1B',
+            'terminal_id' => 1,
+            'name' => 'CC Bawah',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('areas')->insert([
+            'terminal_id' => 1,
+            'name' => 'Transit',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('areas')->insert([
+            'terminal_id' => 2,
+            'name' => 'CC Atas',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('areas')->insert([
+            'terminal_id' => 2,
+            'name' => 'CC Bawah',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('areas')->insert([
+            'terminal_id' => 2,
+            'name' => 'Transit',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

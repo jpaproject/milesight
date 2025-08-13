@@ -45,7 +45,7 @@ class DeviceReadingController extends Controller
         }
 
         $logs = $query->orderBy('received_at', 'desc')->get();
-        $areas = Area::all();
+        $areas = Area::with('terminal')->get();
 
         if ($request->ajax()) {
             try {

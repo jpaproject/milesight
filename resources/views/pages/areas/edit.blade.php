@@ -13,6 +13,22 @@
             @csrf
             @method('PUT')
 
+            <div class="space-y-2">
+                <x-input-label for="terminal_id" :value="__('Terminal')" required class="text-xs" />
+                <select name="terminal_id" id="terminal_id"
+                    class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                    autofocus>
+                    <option value="">-- Select Terminal --</option>
+                    @foreach ($terminals as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ old('terminal_id', $area->terminal_id) == $id ? 'selected' : '' }}>
+                            🏙️ {{ $name }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('teriminal_id')" class="mt-2" />
+            </div>
+
             <div>
                 <x-input-label for="name" :value="__('Name')" required class="text-xs" />
                 <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $area->name)"

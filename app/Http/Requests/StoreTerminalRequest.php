@@ -5,9 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
-class StoreAreaRequest extends FormRequest
+class StoreTerminalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,15 +24,7 @@ class StoreAreaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'terminal_id' => 'required|exists:terminals,id',
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('areas')->where(function ($query) {
-                    return $query->where('terminal_id', request('terminal_id'));
-                }),
-            ],
+            'name' => 'required|string|max:255|unique:terminals,name',
         ];
     }
 
