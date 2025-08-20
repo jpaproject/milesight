@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('area_id')->constrained()->onDelete('cascade');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('topic');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->unique(['area_id', 'name']);
         });
     }
 

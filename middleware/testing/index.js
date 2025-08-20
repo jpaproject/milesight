@@ -8,9 +8,22 @@ const deviceNames = [
     "BoardingLounge-B1-T1A-EM300-TH",
     "BoardingLounge-B2-T1A-EM300-TH",
     "Lingkingatas-B1-T1A-EM300-TH",
+    "Lingkingatas-B2-T1A-EM300-TH",
+    "ConnectingB1-B2-T1A-EM300-TH",
+    "ConnectingB2-B3-T1A-EM300-TH",
+    "CCatas-BoardingLounge-T1A-EM300-TH",
+    "CCatas-setelahPSCP-T1A-EM300-TH",
+    "Checkin-1-T1A-EM300-TH",
+    "Checkin-2-T1A-EM300-TH",
+    "Hallcheckin-T1A-EM300-TH",
+    "SCP1-T1A-EM300-TH",
+    "PerkantoranSayapKiriKeberangkatan-T1A-EM300-TH",
+    "Lingkingbawah-B1-T1A-EM300-TH",
+    "Lingkingbawah-B2-T1A-EM300-TH",
+    "Lingkingbawah-B3-T1A-EM300-TH",
+    "Lingkingbawah-B4-T1A-EM300-TH",
     "BoardingLounge-B1-T1B-AM102",
     "BoardingLounge-B2-T1B-AM102",
-    "Lingkingatas-B1-T1B-AM102",
 ];
 
 // === Fungsi generate data random ===

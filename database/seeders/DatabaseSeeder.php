@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        // $this->call([UserSeeder::class, AreaSeeder::class, DeviceSeeder::class]);
-    	$this->call(UserSeeder::class);
+        $this->call([UserSeeder::class, TerminalSeeder::class, AreaSeeder::class]);
     }
 }

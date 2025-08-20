@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('areas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('terminal_id')->nullable()->constrained('terminals')->onDelete('cascade');
-            $table->string('name');
-            $table->timestamps();
-
-            $table->unique(['terminal_id', 'name']);
+        Schema::table('devices', function (Blueprint $table) {
+            $table->dropColumn('topic');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('areas');
+        Schema::table('devices', function (Blueprint $table) {
+            $table->string('topic');
+        });
     }
 };

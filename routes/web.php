@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceReadingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TerminalController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,15 +13,16 @@ use Illuminate\Support\Facades\Route;
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard-example', function () {
-    return view('dashboard-example');
-})->middleware(['auth', 'verified'])->name('dashboard-example');
+// Route::get('/dashboard-example', function () {
+//     return view('dashboard-example');
+// })->middleware(['auth', 'verified'])->name('dashboard-example');
 
 
 Route::middleware('auth')->group(function () {
     Route::resource('dashboard', DashboardController::class)->only(['index', 'show']);
     Route::get('/logs', [DeviceReadingController::class, 'index'])->name('logs.index');
     Route::post('/logs/filter', [DeviceReadingController::class, 'filter'])->name('logs.filter');
+    Route::resource('terminals', TerminalController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('areas', AreaController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('devices', DeviceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('users', UserController::class)->only(['index', 'store', 'edit', 'update',  'destroy']);

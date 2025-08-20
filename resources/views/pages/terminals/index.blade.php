@@ -2,36 +2,10 @@
     @push('styles')
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-
-        <style>
-            .modal-backdrop {
-                backdrop-filter: blur(8px);
-            }
-
-            .modal-content {
-                animation: modalSlideIn 0.3s ease-out;
-            }
-
-            @keyframes modalSlideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px) scale(0.95);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-
-            .form-input:focus {
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            }
-        </style>
     @endpush
 
 
-    <div x-data="{ pageName: `Device Management` }">
+    <div x-data="{ pageName: `Terminal Management` }">
         <x-breadcrumb />
     </div>
 
@@ -44,12 +18,12 @@
     @enderror
 
 
-    <div x-data="{ createModal: {{ session('show_create_modal') ? 'true' : 'false' }}, deleteModal: false, deviceId: null }"
+    <div x-data="{ createModal: {{ session('show_create_modal') ? 'true' : 'false' }}, deleteModal: false, terminalId: null }"
         class ="mt-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800
         dark:bg-white/[0.03] overflow-hidden shadow-md">
         <div class="px-6 py-4 mb-5">
             <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Device List</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Terminal List</h3>
                 <div class="flex items-center gap-2">
                     <button onclick="refreshTable()"
                         class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
@@ -66,68 +40,47 @@
                                 d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                                 clip-rule="evenodd" />
                         </svg>
-                        Create Device
+                        Create Terminal
                     </button>
                 </div>
             </div>
         </div>
 
         <div class="overflow-x-auto px-6 py-4">
-            <table id="devicesTable" class="min-w-full border dark:border-gray-600 rounded">
+            <table id="terminalsTable" class="min-w-full border dark:border-gray-600 rounded">
                 <thead class="bg-gray-200 dark:bg-gray-800">
                     <tr>
                         <th scope="col"
                             class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">
                             No</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-28">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Terminal Name</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-28">
-                            Area Name</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Device Name</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Status</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
                             Action</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-transparent">
-                    @foreach ($devices as $index => $device)
+                    @foreach ($terminals as $index => $terminal)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center dark:text-white">
                                 {{ $index + 1 }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                {{ $device->area->terminal->name }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                {{ $device->area->name }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                {{ $device->name }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center dark:text-white capitalize">
-                                {{ $device->is_active ? 'Active' : 'Inactive' }}
+                                {{ $terminal->name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <a href="{{ route('devices.edit', $device->id) }}"
+                                    <a href="{{ route('terminals.edit', $terminal->id) }}"
                                         class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
-                                    <button @click="deleteModal = true; deviceId = {{ $device->id }}"
+                                    <button @click="deleteModal = true; terminalId = {{ $terminal->id }}"
                                         class="text-red-600 hover:text-red-900" title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,78 +107,24 @@
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                x-transition:leave-end="opacity-0 scale-95 translate-y-4" x-data="{
-                    areas: [],
-                    selectedArea: '{{ old('area_id') }}',
-                    fetchAreas(terminalId) {
-                        if (!terminalId) {
-                            this.areas = [];
-                            return;
-                        }
-                        fetch(`/api/terminals/${terminalId}/areas`)
-                            .then(res => res.json())
-                            .then(data => {
-                                this.areas = data;
-                            });
-                    }
-                }"
-                x-init="@if(old('terminal_id'))
-                fetchAreas('{{ old('terminal_id') }}')
-                @endif"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
                 class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] overflow-auto scroll-thin">
 
-                <form method="POST" action={{ route('devices.store') }} class="p-6 space-y-4">
+                <form method="POST" action='' class="p-6 space-y-4">
                     @csrf
-                    <h2 class="text-md font-semibold text-gray-800 dark:text-white">Create New Device</h2>
+                    <h2 class="text-md font-semibold text-gray-800 dark:text-white">Create New Terminal</h2>
 
                     @error('error')
                         <x-error-alert message="{{ $message }}" />
                     @enderror
 
-                    <div class="space-y-2">
-                        <x-input-label for="terminal_id" :value="__('Terminal')" required class="text-xs" />
-
-                        <select id="terminal_id" name="terminal_id" @change="fetchAreas($event.target.value)"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                            <option value="">-- Select Terminal --</option>
-                            @foreach ($terminals as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ old('terminal_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
-                        <x-input-label for="area_id" :value="__('Area')" required class="text-xs" />
-
-                        <select name="area_id" id="area_id"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                            x-model="selectedArea">
-                            <template x-for="area in areas" :key="area.id">
-                                <option :value="area.id" x-text="area.name"></option>
-                            </template>
-                        </select>
-                        <x-input-error :messages="$errors->get('area_id')" class="mt-2" />
-                    </div>
 
                     <div>
                         <x-input-label for="name" :value="__('Name')" required class="text-xs" />
                         <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
-                            :value="old('name')" required autofocus autocomplete="name" placeholder="Enter the name" />
+                            :value="old('name')" required autofocus autocomplete="name"
+                            placeholder="Enter the terminal name" />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <x-input-label for="is_active" :value="__('Status')" required class="text-xs" />
-                        <select name="is_active" id="is_active"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>✅ Active</option>
-                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>⛔ Inactive
-                            </option>
-                        </select>
-                        <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end space-x-3 pt-4">
@@ -235,7 +134,7 @@
                         </button>
                         <button type="submit"
                             class="px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                            Create Device
+                            Create Terminal
                         </button>
                     </div>
                 </form>
@@ -258,14 +157,14 @@
 
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
                     <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Confirm Deletion</h2>
-                    <p class="text-gray-600 dark:text-gray-300">Are you sure you want to delete this device?</p>
+                    <p class="text-gray-600 dark:text-gray-300">Are you sure you want to delete this terminal?</p>
 
                     <div class="mt-6 flex justify-end gap-2">
                         <button @click="deleteModal = false"
                             class="px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                             Cancel
                         </button>
-                        <form method="POST" :action="`/devices/${deviceId}`">
+                        <form method="POST" :action="`/terminals/${terminalId}`">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
@@ -295,7 +194,7 @@
         <script>
             $(document).ready(function() {
                 // Initialize DataTable
-                var table = $('#devicesTable').DataTable({
+                var table = $('#terminalsTable').DataTable({
                     processing: true,
                     pageLength: 10,
                     lengthMenu: [
@@ -310,13 +209,12 @@
                             className: 'text-center'
                         },
                         {
-                            targets: [4], // Aksi
+                            targets: [2], // Aksi
                             orderable: false,
                             searchable: false,
                             className: 'text-center'
                         }
                     ],
-
 
                     // Buttons Configuration dengan Tailwind Classes
                     dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4"<"flex sm:flex-row sm:items-center gap-3"lB><""f>>rtip',
@@ -329,14 +227,14 @@
                                 extend: 'copy',
                                 text: '📋 Copy to clipboard',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [0, 1]
                                 }
                             },
                             {
                                 extend: 'excel',
                                 text: '📄 Export as Excel',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [0, 1]
                                 }
                             },
                             {
@@ -345,14 +243,14 @@
                                 orientation: 'landscape',
                                 pageSize: 'A4',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [0, 1]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '🖨️ Print',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [0, 1]
                                 }
                             }
                         ]

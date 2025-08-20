@@ -33,13 +33,6 @@ io.on("connection", (socket) => {
         // Broadcast to frontend clients
         // Option A: Broadcast to all clients
         socket.broadcast.emit("sensor_data", data);
-
-        // Option B: Broadcast to specific room (device-based)
-        if (data.deviceName) {
-            socket.broadcast
-                .to(`device_${data.deviceName}`)
-                .emit("sensor_data", data);
-        }
     });
 
     // Handle frontend client room joining

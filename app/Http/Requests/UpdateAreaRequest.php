@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAreaRequest extends FormRequest
 {
@@ -24,7 +25,15 @@ class UpdateAreaRequest extends FormRequest
         $areaId = $this->route('area');
 
         return [
-            'name' => 'required|string|max:255|unique:areas,name,' . $areaId,
+            'terminal_id' => 'required|exists:terminals,id',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('areas')
+                    ->where(fn($query) => $query->where('terminal_id', $this->terminal_id))
+                    ->ignore($areaId),
+            ]
         ];
     }
 }

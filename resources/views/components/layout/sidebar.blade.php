@@ -5,8 +5,8 @@
         class="sidebar-header flex items-center gap-2 pb-7 pt-8">
         <a href="{{ route('dashboard.index') }}">
             <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-                <img class="dark:hidden" src={{ asset('assets/images/logo.svg') }} alt="Logo" />
-                <img class="hidden dark:block" src={{ asset('assets/images/logo-dark.svg') }} alt="Logo" />
+                <img class="dark:hidden w-36" src={{ asset('assets/images/logo.png') }} alt="Logo" />
+                <img class="hidden dark:block w-36" src={{ asset('assets/images/logo.png') }} alt="Logo" />
             </span>
 
             <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'"
@@ -57,11 +57,11 @@
                     <li>
                         <a href="{{ route('logs.index') }}"
                             class="menu-item group {{ request()->routeIs('logs.index') ? 'menu-item-active' : 'menu-item-inactive' }}">
-                            <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="24"
-                                height="24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
+
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
+                                fill="currentColor">
+                                <path
+                                    d="M128 128C128 92.7 156.7 64 192 64L341.5 64C358.5 64 374.8 70.7 386.8 82.7L493.3 189.3C505.3 201.3 512 217.6 512 234.6L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 128zM336 122.5L336 216C336 229.3 346.7 240 360 240L453.5 240L336 122.5zM248 320C234.7 320 224 330.7 224 344C224 357.3 234.7 368 248 368L392 368C405.3 368 416 357.3 416 344C416 330.7 405.3 320 392 320L248 320zM248 416C234.7 416 224 426.7 224 440C224 453.3 234.7 464 248 464L392 464C405.3 464 416 453.3 416 440C416 426.7 405.3 416 392 416L248 416z" />
                             </svg>
 
 
@@ -71,6 +71,23 @@
                         </a>
                     </li>
                     <!-- Menu Item Logs -->
+
+                    <!-- Menu Item Terminal Management -->
+                    <li>
+                        <a href="{{ route('terminals.index') }}"
+                            class="menu-item group {{ request()->routeIs('terminals.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
+                                fill="currentColor">
+                                <path
+                                    d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Terminal Management
+                            </span>
+                        </a>
+                    </li>
+                    <!-- Menu Item Terminal Management -->
 
                     <!-- Menu Item Area Management -->
                     <li>

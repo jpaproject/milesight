@@ -1,7 +1,6 @@
 import mqtt from "mqtt";
 import { io } from "socket.io-client";
 import axios from "axios";
-import { DateTime } from "luxon";
 import cron from "node-cron";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
@@ -15,7 +14,7 @@ let lastMessageTime = null;
 let dataBuffer = [];
 
 const deviceCache = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_TTL = 1 * 60 * 1000;
 
 const deviceMap = new Map();
 
@@ -63,7 +62,7 @@ function validatePayload(payload) {
         return { valid: false, reason: "Invalid payload structure" };
     }
 
-    const expectedFields = ["deviceName", "temperature", "humidity", "battery"];
+    const expectedFields = ["deviceName", "temperature", "humidity"];
     const hasValidField = expectedFields.some((field) =>
         payload.hasOwnProperty(field)
     );
