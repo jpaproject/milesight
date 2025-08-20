@@ -16,7 +16,6 @@ Route::get('/dashboard-example', function () {
     return view('dashboard-example');
 })->middleware(['auth', 'verified'])->name('dashboard-example');
 
-Route::view('/home', 'pages.home')->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::resource('dashboard', DashboardController::class)->only(['index', 'show']);
