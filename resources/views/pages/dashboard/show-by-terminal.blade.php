@@ -249,6 +249,15 @@
                                     </div>
                                     <span class="humidity-value text-sm font-bold text-gray-600">50%</span>
                                 </div>
+
+                                <div
+                                    class="timestamp flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-300">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-gray-600">🕒</span>
+                                        <span class="text-sm font-medium text-gray-700">Timestamp</span>
+                                    </div>
+                                    <span class="timestamp-value text-sm font-bold text-gray-600">00:00:00</span>
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -281,6 +290,7 @@
                     card.querySelector('.battery-value').innerText = 'Loading...';
                     card.querySelector('.temperature-value').innerText = 'Loading...';
                     card.querySelector('.humidity-value').innerText = 'Loading...';
+                    card.querySelector('.timestamp-value').innerText = 'Loading...';
                 });
 
                 // Accordion functionality
@@ -414,33 +424,69 @@
                 });
 
                 socket.on('sensor_data', function(data) {
+                    console.log('Received sensor data:', data);
                     const card = document.getElementById(`device-${data.deviceName}`);
-                    console.log('Sensor data received:', data.deviceName);
-
 
                     if (card) {
-                        card.querySelector('.battery-value').innerText = `${data.battery}%`;
-                        card.querySelector('.temperature-value').innerText = `${data.temperature}°C`;
-                        card.querySelector('.humidity-value').innerText = `${data.humidity}%`;
+                        // Battery
+                        if (data.battery !== undefined) {
+                            card.querySelector('.battery-value').innerText = `${data.battery}%`;
+                        } else {
+                            card.querySelector('.battery-value').innerText = "Error";
+                        }
 
+                        // Temperature
+                        if (data.temperature !== undefined) {
+                            card.querySelector('.temperature-value').innerText = `${data.temperature}°C`;
+                        } else {
+                            card.querySelector('.temperature-value').innerText = "N/A";
+                        }
+
+                        // Humidity
+                        if (data.humidity !== undefined) {
+                            card.querySelector('.humidity-value').innerText = `${data.humidity}%`;
+                        } else {
+                            card.querySelector('.humidity-value').innerText = "N/A";
+                        }
+
+                        // timestamp
+                        if (data.receivedAt !== undefined) {
+                            card.querySelector('.timestamp-value').innerText = new Date(data.receivedAt)
+                                .toLocaleString('en-US', {
+                                    hour12: false,
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    second: 'numeric',
+                                });
+                        }
+
+                        // Battery color & progress bar (hanya kalau ada data.battery)
                         const batteryBg = card.querySelector('.battery');
-                        batteryBg.className =
-                            `battery flex items-center justify-between p-2 rounded-md gap-2 ${getBatteryColor(data.battery).bg}`;
-
                         const batteryIcon = card.querySelector('.battery-icon');
-                        batteryIcon.className =
-                            `battery-icon ${getBatteryColor(data.battery).text}`;
-
                         const batteryFill = card.querySelector('.battery-fill');
-                        batteryFill.className =
-                            `battery-fill ${getBatteryColor(data.battery).fill}`;
-                        batteryFill.style.width = `${data.battery}%`;
-
                         const batteryValue = card.querySelector('.battery-value');
-                        batteryValue.className =
-                            `battery-value text-sm font-bold ${getBatteryColor(data.battery).text}`;
+
+                        if (data.battery !== undefined) {
+                            const color = getBatteryColor(data.battery);
+
+                            batteryBg.className =
+                                `battery flex items-center justify-between p-2 rounded-md gap-2 ${color.bg}`;
+                            batteryIcon.className = `battery-icon ${color.text}`;
+                            batteryFill.className = `battery-fill ${color.fill}`;
+                            batteryFill.style.width = `${data.battery}%`;
+                            batteryValue.className = `battery-value text-sm font-bold ${color.text}`;
+                        } else {
+                            // Kalau battery tidak ada → reset warna/width biar gak kacau
+                            batteryBg.className =
+                                "battery flex items-center justify-between p-2 rounded-md gap-2";
+                            batteryIcon.className = "battery-icon text-gray-400";
+                            batteryFill.className = "battery-fill bg-gray-300";
+                            batteryFill.style.width = "0%";
+                            batteryValue.className = "battery-value text-sm font-bold text-gray-400";
+                        }
                     }
                 });
+
 
                 function getBatteryColor(battery) {
                     if (battery > 60) return {
