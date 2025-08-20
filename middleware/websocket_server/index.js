@@ -20,15 +20,29 @@ let messageStats = {
     lastReceived: null,
 };
 
+const latestData = new Map();
+
 io.on("connection", (socket) => {
     console.log(`🔌 Client connected: ${socket.id}`);
+
+    if (latestData.size > 0) {
+        latestData.forEach((data) => {
+            socket.emit("sensor_data", data);
+        });
+    }
 
     // Handle MQTT data from bridge
     socket.on("mqtt_data", (data) => {
         messageStats.total++;
         messageStats.lastReceived = new Date().toISOString();
+        console.log("data", data);
 
         if (!data || typeof data !== "object") return;
+
+        const key = data.deviceName;
+        latestData.set(key, {
+            ...data,
+        });
 
         // Broadcast to frontend clients
         // Option A: Broadcast to all clients
