@@ -99,7 +99,8 @@
                 <include src="./partials/common-grid-shape.html"></include>
                 <div class="flex flex-col items-center max-w-xs">
                     <a href="index.html" class="block mb-4">
-                        <img src="./images/logo/auth-logo.svg" alt="Logo" />
+                        {{-- <img src="./images/logo/auth-logo.svg" alt="Logo" /> --}}
+                        <img class="w-48" src={{ asset('assets/images/logo.png') }} alt="Logo" />
                     </a>
                     <p class="text-center text-gray-400 dark:text-white/60">
                         Instant Insights into Every Room’s Condition

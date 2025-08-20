@@ -5,8 +5,8 @@
         class="sidebar-header flex items-center gap-2 pb-7 pt-8">
         <a href="{{ route('dashboard.index') }}">
             <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-                <img class="dark:hidden" src={{ asset('assets/images/logo.svg') }} alt="Logo" />
-                <img class="hidden dark:block" src={{ asset('assets/images/logo-dark.svg') }} alt="Logo" />
+                <img class="dark:hidden w-36" src={{ asset('assets/images/logo.png') }} alt="Logo" />
+                <img class="hidden dark:block w-36" src={{ asset('assets/images/logo.png') }} alt="Logo" />
             </span>
 
             <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'"

@@ -122,9 +122,9 @@
                     const card = document.getElementById(`device-${data.deviceName}`);
 
                     if (card) {
-                        card.querySelector('.battery-value').innerText = `${data.battery}%`;
-                        card.querySelector('.temperature-value').innerText = `${data.temperature}°C`;
-                        card.querySelector('.humidity-value').innerText = `${data.humidity}%`;
+                        card.querySelector('.battery-value').innerText = `${data.battery ?? 0}%`;
+                        card.querySelector('.temperature-value').innerText = `${data.temperature ?? 0}°C`;
+                        card.querySelector('.humidity-value').innerText = `${data.humidity ?? 0}%`;
 
                         const batteryBg = card.querySelector('.battery');
                         batteryBg.className =
