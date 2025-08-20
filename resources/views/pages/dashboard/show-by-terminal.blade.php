@@ -450,9 +450,14 @@
                         }
 
                         // timestamp
-                        if (data.timestamp !== undefined) {
+                        if (data.receivedAt !== undefined) {
                             card.querySelector('.timestamp-value').innerText = new Date(data.receivedAt)
-                                .toLocaleString();
+                                .toLocaleString('en-US', {
+                                    hour12: false,
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    second: 'numeric',
+                                });
                         }
 
                         // Battery color & progress bar (hanya kalau ada data.battery)
