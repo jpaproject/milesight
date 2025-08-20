@@ -62,7 +62,7 @@ function validatePayload(payload) {
         return { valid: false, reason: "Invalid payload structure" };
     }
 
-    const expectedFields = ["deviceName", "temperature", "humidity", "battery"];
+    const expectedFields = ["deviceName", "temperature", "humidity"];
     const hasValidField = expectedFields.some((field) =>
         payload.hasOwnProperty(field)
     );
