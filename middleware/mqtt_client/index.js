@@ -1,22 +1,16 @@
 import mqtt from "mqtt";
 import { io } from "socket.io-client";
 import axios from "axios";
-import cron from "node-cron";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
-
-const TIMEZONE = "Asia/Jakarta";
 
 let isShuttingDown = false;
 let mqttClient = null;
 let socketClient = null;
 let lastMessageTime = null;
-let dataBuffer = [];
 
 const deviceCache = new Map();
 const CACHE_TTL = 1 * 60 * 1000;
-
-const deviceMap = new Map();
 
 // ensuring that only authorized mqtt.js services can access specific API endpoints by including an API key with each request.
 const API_KEY = process.env.MQTT_SERVICE_API_KEY;
@@ -103,21 +97,6 @@ async function isDeviceRegistered(deviceName) {
     }
 }
 
-function updateDataBuffer(payload) {
-    const { deviceName } = payload;
-    const existingIndex = deviceMap.get(deviceName);
-
-    if (existingIndex !== undefined && dataBuffer[existingIndex]) {
-        // Update existing
-        dataBuffer[existingIndex] = payload;
-    } else {
-        // Add new
-        const newIndex = dataBuffer.length;
-        dataBuffer.push(payload);
-        deviceMap.set(deviceName, newIndex);
-    }
-}
-
 async function handleMQTTMessage(topic, message) {
     if (isShuttingDown) return;
 
@@ -157,8 +136,7 @@ async function handleMQTTMessage(topic, message) {
         receivedAt: new Date().toISOString(),
     };
 
-    // Update buffer dengan optimized search
-    updateDataBuffer(enrichedPayload);
+    sendDataToAPI(enrichedPayload);
 
     // Forward to WebSocket
     if (socketClient?.connected) {
@@ -169,19 +147,11 @@ async function handleMQTTMessage(topic, message) {
     }
 }
 
-async function sendDataToAPI() {
-    if (!dataBuffer) {
-        console.log("No sensor data available to store");
-        return;
-    }
-
+async function sendDataToAPI(dataBuffer) {
     try {
         const response = await apiRequest.post("/device-readings", dataBuffer);
 
         if (response.status === 200 || response.status === 201) {
-            console.log(
-                `✅ Successfully sent ${data.length} records to database`
-            );
             return true;
         } else {
             console.error(`❌ API returned status: ${response.status}`);
@@ -301,13 +271,6 @@ async function shutdown() {
         process.exit(0);
     }, 1000);
 }
-
-// Set up cron job to store data every 2 minutes (at 00, 02, 04, ..., 58 minutes of each hour)
-// Schedule format: sec min hour day month day-of-week
-cron.schedule("0 */2 * * * *", sendDataToAPI, {
-    scheduled: true,
-    timezone: TIMEZONE, // Adjust to your timezone
-});
 
 // Error handlers
 process.on("SIGINT", shutdown);
