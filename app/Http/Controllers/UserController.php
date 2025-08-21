@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::where('role', 'user')->orderBy('created_at', 'desc')->get();
+        $users = User::orderBy('created_at', 'desc')->get();
 
         return view('pages.users.index', compact('users'));
     }

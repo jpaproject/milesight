@@ -217,6 +217,7 @@
 
                             <div class="space-y-3">
                                 <!-- Battery -->
+                                 @if ($area->id != 1)
                                 <div
                                     class="battery flex items-center justify-between p-2 rounded-md bg-green-50 dark:bg-green-500/10">
                                     <div class="flex items-center gap-2">
@@ -228,6 +229,7 @@
                                     </div>
                                     <span class="battery-value text-sm font-bold text-green-600">50%</span>
                                 </div>
+                                @endif
 
                                 <!-- Temperature -->
                                 <div
