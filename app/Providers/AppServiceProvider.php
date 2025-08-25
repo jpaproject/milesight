@@ -31,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
         if (!empty($proxy_schema)) {
             \URL::forceScheme($proxy_schema);
         }
+
+        $terminals = \App\Models\Terminal::all();
+        view()->share('terminals', $terminals);
     }
 }

@@ -37,22 +37,57 @@
                 <ul class="mb-6 flex flex-col gap-4">
                     <!-- Menu Item Dashboard -->
                     <li>
-                        <a href="{{ route('dashboard.index') }}"
-                            class="menu-item group {{ request()->routeIs('dashboard.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                        <!-- Parent Menu -->
+                        <a href="#"
+                            @click.prevent="selected = (selected === 'Dashboard' ? '' : 'Dashboard')"
+                            class="menu-item group"
+                            :class="(selected === 'Dashboard') 
+                                || (page === 'ecommerce' || page === 'analytics' || page === 'marketing' || page === 'crm' || page === 'stocks') 
+                                ? 'menu-item-active' : 'menu-item-inactive'">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
-                                fill="currentColor">
+                            <!-- Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24" fill="currentColor">
                                 <path
                                     d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM384 416C384 389.1 367.5 366.1 344 356.7L344 184C344 170.7 333.3 160 320 160C306.7 160 296 170.7 296 184L296 356.7C272.5 366.2 256 389.2 256 416C256 451.3 284.7 480 320 480C355.3 480 384 451.3 384 416zM208 240C225.7 240 240 225.7 240 208C240 190.3 225.7 176 208 176C190.3 176 176 190.3 176 208C176 225.7 190.3 240 208 240zM192 320C192 302.3 177.7 288 160 288C142.3 288 128 302.3 128 320C128 337.7 142.3 352 160 352C177.7 352 192 337.7 192 320zM480 352C497.7 352 512 337.7 512 320C512 302.3 497.7 288 480 288C462.3 288 448 302.3 448 320C448 337.7 462.3 352 480 352zM464 208C464 190.3 449.7 176 432 176C414.3 176 400 190.3 400 208C400 225.7 414.3 240 432 240C449.7 240 464 225.7 464 208z" />
                             </svg>
 
+                            <!-- Label -->
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                                 Dashboard
                             </span>
-                        </a>
-                    </li>
-                    <!-- Menu Item Dashboard -->
 
+                            <!-- Arrow -->
+                            <svg class="menu-item-arrow"
+                                :class="[(selected === 'Dashboard') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
+                                width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu Start -->
+                        <div class="overflow-hidden transform translate"
+                            :class="(selected === 'Dashboard') ? 'block' : 'hidden'">
+
+                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" 
+                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+
+                                @foreach ($terminals as $terminal)
+                                    <li>
+                                        <a href="{{ route('dashboard.show', $terminal->id) }}"
+                                            class="menu-dropdown-item group"
+                                            :class="page === '{{ $terminal->id }}' 
+                                                ? 'menu-dropdown-item-active' 
+                                                : 'menu-dropdown-item-inactive'">
+                                            {{ $terminal->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+
+                            </ul>
+                        </div>
+                        <!-- Dropdown Menu End -->
+                    </li>
                     <!-- Menu Item Logs -->
                     <li>
                         <a href="{{ route('logs.index') }}"
