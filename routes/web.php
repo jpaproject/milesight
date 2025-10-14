@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
     Route::resource('dashboard', DashboardController::class)->only(['index', 'show']);
+    Route::get('/overview', [DashboardController::class, 'overview'])->name('dashboard.overview');
     Route::get('/logs', [DeviceReadingController::class, 'index'])->name('logs.index');
     Route::post('/logs/filter', [DeviceReadingController::class, 'filter'])->name('logs.filter');
     Route::resource('terminals', TerminalController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);

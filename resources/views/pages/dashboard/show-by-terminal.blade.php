@@ -1,6 +1,16 @@
 <x-app-layout>
     @push('styles')
         <style>
+	    /*@keyframes blink-red {
+  		0%, 50%, 100% { color: red; }
+  		25%, 75% { color: transparent; }
+	    }*/
+
+	    .blinking-red {
+ 	      //  animation: blink-red 5s infinite;
+	      color: red;
+	    }
+
             .battery-icon {
                 width: 16px;
                 height: 10px;
@@ -91,6 +101,14 @@
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 overflow: hidden;
             }
+
+	    @media (max-width: 768px) {
+	        .area-content {
+                   max-height: 60hv;
+                   overflow-y: auto;
+    	           -webkit-overflow-scrolling: touch;
+	        }
+	    }
 
             .area-content.collapsed {
                 max-height: 0;
@@ -423,6 +441,10 @@
                     console.error('Connection error:', error);
                 });
 
+                socket.on('dashboard_overview_update', function(data) {
+                    console.log('Received dashboard overview update:', data);
+                });
+
                 socket.on('sensor_data', function(data) {
                     console.log('Received sensor data:', data);
                     const card = document.getElementById(`device-${data.deviceName}`);
@@ -450,7 +472,7 @@
                         }
 
                         // timestamp
-                        if (data.receivedAt !== undefined) {
+                        /*if (data.receivedAt !== undefined) {
                             card.querySelector('.timestamp-value').innerText = new Date(data.receivedAt)
                                 .toLocaleString('en-US', {
                                     hour12: false,
@@ -458,7 +480,30 @@
                                     minute: 'numeric',
                                     second: 'numeric',
                                 });
-                        }
+                   	   }*/
+
+			// Timestamp with blinking if > 2 hours
+    			if (data.receivedAt !== undefined) {
+        		    const tsElement = card.querySelector('.timestamp-value');
+        		    const date = new Date(data.receivedAt);
+        		    tsElement.innerText = date.toLocaleString('en-CA', {
+            			year: 'numeric',
+            			month: '2-digit',
+            			day: '2-digit',
+            			hour: '2-digit',
+            			minute: '2-digit',
+            			hour12: false
+        		    }).replace(',', '');
+
+        		    const now = new Date();
+        		    const diffHours = (now - date) / (1000 * 60 * 60); // selisih jam
+
+       			    if (diffHours > 1) {
+           		        tsElement.classList.add('blinking-red');
+        		    } else {
+        		        tsElement.classList.remove('blinking-red');
+        		    }
+    			}
 
                         // Battery color & progress bar (hanya kalau ada data.battery)
                         const batteryBg = card.querySelector('.battery');

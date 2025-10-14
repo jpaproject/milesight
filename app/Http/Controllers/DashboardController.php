@@ -12,6 +12,12 @@ class DashboardController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function overview()
+    {
+        return view('pages.dashboard.overview');
+    }
+
     public function index()
     {
         $terminals = Terminal::pluck('name', 'id');

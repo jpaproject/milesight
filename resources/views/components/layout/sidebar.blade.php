@@ -36,14 +36,28 @@
 
                 <ul class="mb-6 flex flex-col gap-4">
                     <!-- Menu Item Dashboard -->
+                     <li>
+                        <a href="{{ route('dashboard.overview') }}"
+                            class="menu-item group {{ request()->routeIs('dashboard.overview') ? 'menu-item-active' : 'menu-item-inactive' }}">
+
+                            <!-- Icon Overview (Chart) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                fill="currentColor">
+                                <path
+                                    d="M11 2a9 9 0 1 0 9 9h-9V2zM13 4.07V11h6.93A8.003 8.003 0 0 0 13 4.07z" />
+                            </svg>
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Overview
+                            </span>
+                        </a>
+                    </li>
                     <li>
                         <!-- Parent Menu -->
                         <a href="#"
                             @click.prevent="selected = (selected === 'Dashboard' ? '' : 'Dashboard')"
                             class="menu-item group"
-                            :class="(selected === 'Dashboard') 
-                                || (page === 'ecommerce' || page === 'analytics' || page === 'marketing' || page === 'crm' || page === 'stocks') 
-                                ? 'menu-item-active' : 'menu-item-inactive'">
+                            :class="(selected === 'Dashboard') ? 'menu-item-active' : 'menu-item-inactive'">
 
                             <!-- Icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24" fill="currentColor">

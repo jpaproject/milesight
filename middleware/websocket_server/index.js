@@ -21,6 +21,8 @@ let messageStats = {
 };
 
 const latestData = new Map();
+// Cache untuk data overview dashboard (baru ditambahkan)
+let lastOverviewPayload = null;
 
 io.on("connection", (socket) => {
     console.log(`🔌 Client connected: ${socket.id}`);
@@ -29,6 +31,11 @@ io.on("connection", (socket) => {
         latestData.forEach((data) => {
             socket.emit("sensor_data", data);
         });
+    }
+
+    if (lastOverviewPayload) {
+        console.log(`📦 Mengirim data overview terakhir ke client ${socket.id}`);
+        socket.emit("dashboard_overview_update", lastOverviewPayload);
     }
 
     // Handle MQTT data from bridge
@@ -47,6 +54,14 @@ io.on("connection", (socket) => {
         // Broadcast to frontend clients
         // Option A: Broadcast to all clients
         socket.broadcast.emit("sensor_data", data);
+    });
+
+     // Handle data overview yang sudah diagregasi
+    socket.on("overview_data", (payload) => {
+        console.log("📊 Menerima data overview agregat.");
+        lastOverviewPayload = payload;
+        // Langsung broadcast payload ini ke semua client dengan event baru
+        io.emit("dashboard_overview_update", payload);
     });
 
     // Handle frontend client room joining
