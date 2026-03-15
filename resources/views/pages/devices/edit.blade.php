@@ -15,6 +15,7 @@
         <form method="POST" action="{{ route('devices.update', $device->id) }}" class="p-6 space-y-4">
             @csrf
             @method('PUT')
+            <input type="hidden" name="is_active" value="{{ old('is_active', $device->is_active) }}">
 
             <!-- Name -->
             <div>
@@ -22,23 +23,6 @@
                 <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $device->name)"
                     required autocomplete="name" placeholder="Enter the name" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
-            </div>
-
-            <!-- Status -->
-            <div class="space-y-2">
-                <x-input-label for="is_active" :value="__('Status')" required class="text-xs" />
-                <select name="is_active" id="is_active"
-                    class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-
-                    <option value="1" {{ old('is_active', $device->is_active) == '1' ? 'selected' : '' }}>✅ Active
-                    </option>
-                    <option value="0" {{ old('is_active', $device->is_active) == '0' ? 'selected' : '' }}>⛔
-                        Inactive
-                    </option>
-
-                    </option>
-                </select>
-                <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
             </div>
 
             <!-- Actions -->
