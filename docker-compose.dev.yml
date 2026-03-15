@@ -6,14 +6,32 @@ services:
       dockerfile: Dockerfile
     container_name: ${COMPOSE_PROJECT_NAME:-laravel}_app_dev
     volumes:
-      - .:/var/www:cached
-      - vendor:/var/www/vendor
-      # - node_modules:/var/www/node_modules
+      - .:/var/www:delegated
+      # - vendor:/var/www/vendor
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      # redis:
+      #   condition: service_healthy
+    ports:
+      - "${VITE_PORT:-5173}:5173"
     networks:
       - laravel
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep php-fpm > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
 
   nginx:
     image: nginx:1.27.5-alpine3.21
@@ -21,13 +39,20 @@ services:
     ports:
       - "${NGINX_PORT:-8000}:80"
     volumes:
-      - .:/var/www:cached
+      - .:/var/www:delegated
       - ./docker/nginx/dev.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     networks:
       - laravel
     restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   postgres:
     image: postgres:15.13-alpine3.21
@@ -36,27 +61,77 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-laravel}
       POSTGRES_USER: ${DB_USERNAME:-laravel}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${DB_PORT_PGSQL:-5432}:5432"
+    #   - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    #   - ./backups:/backups
+    # ports:
+    #   - "${DB_PORT_PGSQL:-5432}:5432"
     networks:
       - laravel
     restart: unless-stopped
+    shm_size: 256mb
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-laravel}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_connections=50
+      -c work_mem=4MB
+      -c maintenance_work_mem=32MB
+      -c effective_cache_size=128MB
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+
+  # redis:
+  #   image: redis:7.4-alpine
+  #   container_name: ${COMPOSE_PROJECT_NAME:-laravel}_redis_dev
+  #   ports:
+  #     - "${REDIS_PORT:-6379}:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - laravel
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   command: >
+  #     redis-server
+  #     --appendonly yes
+  #     --maxmemory 256mb
+  #     --maxmemory-policy allkeys-lru
+  #     --save 60 1000
+  #     --tcp-backlog 511
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: 512M
 
   pgadmin:
     image: dpage/pgadmin4:9.5.0
     container_name: ${COMPOSE_PROJECT_NAME:-laravel}_pgadmin
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: khalilannbiya@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: Together1!
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@gmail.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -64,28 +139,41 @@ services:
     networks:
       - laravel
     restart: unless-stopped
+
+  # Node container for Vite dev server (disabled - wayfinder plugin requires PHP)
+  # Use: docker compose exec app npm run dev -- --host
   # node:
   #   image: node:22.16.0-alpine3.22
   #   container_name: ${COMPOSE_PROJECT_NAME:-laravel}_node_dev
   #   working_dir: /var/www
   #   volumes:
-  #     - .:/var/www:cached
+  #     - .:/var/www:delegated
   #     - node_modules:/var/www/node_modules
-  #   command: sh -c "npm install && npm run dev"
+  #   command: sh -c "npm install && npm run dev -- --host"
+  #   ports:
+  #     - "${VITE_PORT:-5173}:5173"
   #   networks:
   #     - laravel
   #   restart: unless-stopped
 
 volumes:
   postgres_data:
+    name: ${COMPOSE_PROJECT_NAME:-laravel}_postgres_data
     driver: local
   pgadmin_data:
+    name: ${COMPOSE_PROJECT_NAME:-laravel}_pgadmin_data
     driver: local
-  vendor:
-    driver: local
+  # vendor:
+  #   name: ${COMPOSE_PROJECT_NAME:-laravel}_vendor
+  #   driver: local
+  # redis_data:
+  #   name: ${COMPOSE_PROJECT_NAME:-laravel}_redis_data
+  #   driver: local
   # node_modules:
+  #   name: ${COMPOSE_PROJECT_NAME:-laravel}_node_modules
   #   driver: local
 
 networks:
   laravel:
+    name: ${COMPOSE_PROJECT_NAME:-laravel}_network
     driver: bridge
