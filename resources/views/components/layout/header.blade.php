@@ -34,8 +34,9 @@
 
             {{-- Logo Mobile --}}
             <a href="{{ route('dashboard.index') }}" class="lg:hidden">
-                <img class="dark:hidden w-[120px]" src={{ asset('assets/images/logo.png') }} alt="Logo" />
-                <img class="hidden dark:block w-[120px]" src={{ asset('assets/images/logo.png') }} alt="Logo" />
+                <img class="dark:hidden w-32" src={{ asset('assets/images/logo-grootech-long.png') }} alt="Logo" />
+                <img class="hidden dark:block w-32" src={{ asset('assets/images/logo-grootech-long.png') }}
+                    alt="Logo" />
             </a>
 
             <!-- Application nav menu button -->

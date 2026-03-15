@@ -222,6 +222,21 @@
         <form id="filterForm" method="GET" action="{{ route('logs.index') }}">
             <div class="filter-grid">
                 <div class="filter-group">
+                    <label for="deviceFilter">
+                        <i class="fas fa-microchip mr-1"></i>Device
+                    </label>
+                    <select id="deviceFilter" name="device_id">
+                        <option value="all">All Devices</option>
+                        @foreach ($devices as $device)
+                            <option value="{{ $device->id }}"
+                                {{ (string) request('device_id') === (string) $device->id ? 'selected' : '' }}>
+                                {{ $device->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <label for="startDate">
                         <i class="fas fa-calendar-alt mr-1"></i>Start Date
                     </label>
@@ -262,7 +277,7 @@
                 <div class="text-sm text-blue-700 dark:text-blue-300">
                     <strong>Filter Guide:</strong>
                     <ul class="mt-1 space-y-1">
-                        <li>• <strong>Backend Filters</strong> (Date Range): Filters data from server - affects what data is loaded</li>
+                        <li>• <strong>Backend Filters</strong> (Device, Date Range): Filters data from server - affects what data is loaded</li>
                         <li>• <strong>Search Box</strong>: Searches within currently loaded data only</li>
                         <li>• Default view shows today's data only. Use filters to see other dates</li>
                     </ul>
@@ -465,13 +480,16 @@
                     var url = new URL(window.location.href);
 
                     // Clear existing parameters
+                    url.searchParams.delete('device_id');
                     url.searchParams.delete('start_date');
                     url.searchParams.delete('end_date');
 
                     // Add new parameters
+                    var deviceFilter = $('#deviceFilter').val();
                     var startDate = $('#startDate').val();
                     var endDate = $('#endDate').val();
 
+                    if (deviceFilter && deviceFilter !== 'all') url.searchParams.set('device_id', deviceFilter);
                     if (startDate) url.searchParams.set('start_date', startDate);
                     if (endDate) url.searchParams.set('end_date', endDate);
 
@@ -482,6 +500,9 @@
                 function updateFilterStatus() {
                     var activeFilters = [];
 
+                    if ($('#deviceFilter').val() && $('#deviceFilter').val() !== 'all') {
+                        activeFilters.push('Device: ' + $('#deviceFilter option:selected').text());
+                    }
                     if ($('#startDate').val()) {
                         activeFilters.push('From: ' + $('#startDate').val());
                     }
@@ -510,8 +531,15 @@
                     var url = new URL(window.location.href);
 
                     // Update URL parameters
+                    var deviceFilter = $('#deviceFilter').val();
                     var startDate = $('#startDate').val();
                     var endDate = $('#endDate').val();
+
+                    if (deviceFilter && deviceFilter !== 'all') {
+                        url.searchParams.set('device_id', deviceFilter);
+                    } else {
+                        url.searchParams.delete('device_id');
+                    }
 
                     if (startDate) {
                         url.searchParams.set('start_date', startDate);
@@ -543,6 +571,9 @@
                 function restoreFiltersFromURL() {
                     var urlParams = new URLSearchParams(window.location.search);
 
+                    if (urlParams.get('device_id')) {
+                        $('#deviceFilter').val(urlParams.get('device_id'));
+                    }
                     if (urlParams.get('start_date')) {
                         $('#startDate').val(urlParams.get('start_date'));
                     }

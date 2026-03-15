@@ -17,6 +17,10 @@ class DeviceReadingController extends Controller
     {
         $query = DeviceReading::with('device');
 
+        if ($request->filled('device_id') && $request->device_id !== 'all') {
+            $query->where('device_id', $request->device_id);
+        }
+
         $hasDateFilter =
             $request->filled('start_date') ||
             $request->filled('end_date');
@@ -37,6 +41,7 @@ class DeviceReadingController extends Controller
         }
 
         $logs = $query->orderBy('received_at', 'desc')->get();
+        $devices = Device::orderBy('name')->get(['id', 'name']);
         if ($request->ajax()) {
             try {
                 $html = view('partials.logs-table-rows', compact('logs'))->render();
@@ -55,14 +60,18 @@ class DeviceReadingController extends Controller
             }
         }
 
-        return view('pages.logs.index', compact('logs', 'showingToday'));
+        return view('pages.logs.index', compact('logs', 'devices', 'showingToday'));
     }
 
 
 
     public function filter(Request $request)
     {
-        $query = DeviceReading::with(['area', 'device']);
+        $query = DeviceReading::with('device');
+
+        if ($request->filled('device_id') && $request->device_id !== 'all') {
+            $query->where('device_id', $request->device_id);
+        }
 
         if ($request->filled('start_date')) {
             $query->whereDate('received_at', '>=', $request->start_date);
