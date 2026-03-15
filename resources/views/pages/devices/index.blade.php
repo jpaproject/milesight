@@ -80,12 +80,6 @@
                             class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">
                             No</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-28">
-                            Terminal Name</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-28">
-                            Area Name</th>
-                        <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Device Name</th>
                         <th scope="col"
@@ -101,14 +95,6 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center dark:text-white">
                                 {{ $index + 1 }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                {{ $device->area->terminal->name }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                {{ $device->area->name }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
@@ -149,29 +135,12 @@
             x-transition:leave-end="opacity-0"
             class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 modal-backdrop">
 
-            <div @click.outside="createModal = false" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                x-transition:leave-end="opacity-0 scale-95 translate-y-4" x-data="{
-                    areas: [],
-                    selectedArea: '{{ old('area_id') }}',
-                    fetchAreas(terminalId) {
-                        if (!terminalId) {
-                            this.areas = [];
-                            return;
-                        }
-                        fetch(`/api/terminals/${terminalId}/areas`)
-                            .then(res => res.json())
-                            .then(data => {
-                                this.areas = data;
-                            });
-                    }
-                }"
-                x-init="@if(old('terminal_id'))
-                fetchAreas('{{ old('terminal_id') }}')
-                @endif"
+                <div @click.outside="createModal = false" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 scale-95 translate-y-4"
                 class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl modal-content max-h-[80vh] overflow-auto scroll-thin">
 
                 <form method="POST" action={{ route('devices.store') }} class="p-6 space-y-4">
@@ -181,34 +150,9 @@
                     @error('error')
                         <x-error-alert message="{{ $message }}" />
                     @enderror
-
-                    <div class="space-y-2">
-                        <x-input-label for="terminal_id" :value="__('Terminal')" required class="text-xs" />
-
-                        <select id="terminal_id" name="terminal_id" @change="fetchAreas($event.target.value)"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                            <option value="">-- Select Terminal --</option>
-                            @foreach ($terminals as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ old('terminal_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
-                        <x-input-label for="area_id" :value="__('Area')" required class="text-xs" />
-
-                        <select name="area_id" id="area_id"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                            x-model="selectedArea">
-                            <template x-for="area in areas" :key="area.id">
-                                <option :value="area.id" x-text="area.name"></option>
-                            </template>
-                        </select>
-                        <x-input-error :messages="$errors->get('area_id')" class="mt-2" />
-                    </div>
+                    @if ($errors->has('area_id'))
+                        <x-error-alert message="{{ $errors->first('area_id') }}" />
+                    @endif
 
                     <div>
                         <x-input-label for="name" :value="__('Name')" required class="text-xs" />
@@ -310,7 +254,7 @@
                             className: 'text-center'
                         },
                         {
-                            targets: [4], // Aksi
+                            targets: [3], // Aksi
                             orderable: false,
                             searchable: false,
                             className: 'text-center'
@@ -329,14 +273,14 @@
                                 extend: 'copy',
                                 text: '📋 Copy to clipboard',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [1, 2]
                                 }
                             },
                             {
                                 extend: 'excel',
                                 text: '📄 Export as Excel',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [1, 2]
                                 }
                             },
                             {
@@ -345,14 +289,14 @@
                                 orientation: 'landscape',
                                 pageSize: 'A4',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [1, 2]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '🖨️ Print',
                                 exportOptions: {
-                                    columns: [1, 2, 3]
+                                    columns: [1, 2]
                                 }
                             }
                         ]

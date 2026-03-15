@@ -17,7 +17,7 @@
 
     <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <!-- Sidebar Menu -->
-        <nav x-data="{ selected: $persist('Dashboard') }">
+        <nav x-data="{}">
             <!-- Menu Group -->
             <div>
                 <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
@@ -36,71 +36,17 @@
 
                 <ul class="mb-6 flex flex-col gap-4">
                     <!-- Menu Item Dashboard -->
-                     <li>
-                        <a href="{{ route('dashboard.overview') }}"
-                            class="menu-item group {{ request()->routeIs('dashboard.overview') ? 'menu-item-active' : 'menu-item-inactive' }}">
-
-                            <!-- Icon Overview (Chart) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                                fill="currentColor">
-                                <path
-                                    d="M11 2a9 9 0 1 0 9 9h-9V2zM13 4.07V11h6.93A8.003 8.003 0 0 0 13 4.07z" />
-                            </svg>
-
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                Overview
-                            </span>
-                        </a>
-                    </li>
                     <li>
-                        <!-- Parent Menu -->
-                        <a href="#"
-                            @click.prevent="selected = (selected === 'Dashboard' ? '' : 'Dashboard')"
-                            class="menu-item group"
-                            :class="(selected === 'Dashboard') ? 'menu-item-active' : 'menu-item-inactive'">
-
-                            <!-- Icon -->
+                        <a href="{{ route('dashboard.index') }}"
+                            class="menu-item group {{ request()->routeIs('dashboard.index') ? 'menu-item-active' : 'menu-item-inactive' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24" fill="currentColor">
                                 <path
                                     d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM384 416C384 389.1 367.5 366.1 344 356.7L344 184C344 170.7 333.3 160 320 160C306.7 160 296 170.7 296 184L296 356.7C272.5 366.2 256 389.2 256 416C256 451.3 284.7 480 320 480C355.3 480 384 451.3 384 416zM208 240C225.7 240 240 225.7 240 208C240 190.3 225.7 176 208 176C190.3 176 176 190.3 176 208C176 225.7 190.3 240 208 240zM192 320C192 302.3 177.7 288 160 288C142.3 288 128 302.3 128 320C128 337.7 142.3 352 160 352C177.7 352 192 337.7 192 320zM480 352C497.7 352 512 337.7 512 320C512 302.3 497.7 288 480 288C462.3 288 448 302.3 448 320C448 337.7 462.3 352 480 352zM464 208C464 190.3 449.7 176 432 176C414.3 176 400 190.3 400 208C400 225.7 414.3 240 432 240C449.7 240 464 225.7 464 208z" />
                             </svg>
-
-                            <!-- Label -->
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                                 Dashboard
                             </span>
-
-                            <!-- Arrow -->
-                            <svg class="menu-item-arrow"
-                                :class="[(selected === 'Dashboard') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                                width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
                         </a>
-
-                        <!-- Dropdown Menu Start -->
-                        <div class="overflow-hidden transform translate"
-                            :class="(selected === 'Dashboard') ? 'block' : 'hidden'">
-
-                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" 
-                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-
-                                @foreach ($terminals as $terminal)
-                                    <li>
-                                        <a href="{{ route('dashboard.show', $terminal->id) }}"
-                                            class="menu-dropdown-item group"
-                                            :class="page === '{{ $terminal->id }}' 
-                                                ? 'menu-dropdown-item-active' 
-                                                : 'menu-dropdown-item-inactive'">
-                                            {{ $terminal->name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-
-                            </ul>
-                        </div>
-                        <!-- Dropdown Menu End -->
                     </li>
                     <!-- Menu Item Logs -->
                     <li>
@@ -120,40 +66,6 @@
                         </a>
                     </li>
                     <!-- Menu Item Logs -->
-
-                    <!-- Menu Item Terminal Management -->
-                    <li>
-                        <a href="{{ route('terminals.index') }}"
-                            class="menu-item group {{ request()->routeIs('terminals.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
-                                fill="currentColor">
-                                <path
-                                    d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z" />
-                            </svg>
-
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                Terminal Management
-                            </span>
-                        </a>
-                    </li>
-                    <!-- Menu Item Terminal Management -->
-
-                    <!-- Menu Item Area Management -->
-                    <li>
-                        <a href="{{ route('areas.index') }}"
-                            class="menu-item group {{ request()->routeIs('areas.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
-                                fill="currentColor">
-                                <path
-                                    d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z" />
-                            </svg>
-
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                Area Management
-                            </span>
-                        </a>
-                    </li>
-                    <!-- Menu Item Area Management -->
 
                     <!-- Menu Item Device Management -->
                     <li>
