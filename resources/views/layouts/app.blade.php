@@ -8,6 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo-grootech.png') }}" />
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     @stack('styles')
