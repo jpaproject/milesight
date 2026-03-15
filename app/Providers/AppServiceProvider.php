@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Schema;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -32,7 +33,9 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme($proxy_schema);
         }
 
-        $terminals = \App\Models\Terminal::all();
-        view()->share('terminals', $terminals);
+        if (!app()->runningInConsole() && Schema::hasTable('terminals')) {
+            $terminals = \App\Models\Terminal::all();
+            view()->share('terminals', $terminals);
+        }
     }
 }
