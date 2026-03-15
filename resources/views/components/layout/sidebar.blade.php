@@ -69,6 +69,22 @@
                     </li>
                     <!-- Menu Item Logs -->
 
+                    <!-- Menu Item Trending -->
+                    <li>
+                        <a href="{{ route('trending.index') }}"
+                            class="menu-item group {{ request()->routeIs('trending.index') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="24" height="24"
+                                fill="currentColor">
+                                <path
+                                    d="M96 512C96 494.3 110.3 480 128 480L512 480C529.7 480 544 494.3 544 512C544 529.7 529.7 544 512 544L128 544C110.3 544 96 529.7 96 512zM152.6 394.6C143.3 385.3 143.3 370.1 152.6 360.8L256 257.4L320 321.4L456.6 184.8C465.9 175.5 481.1 175.5 490.4 184.8C499.7 194.1 499.7 209.3 490.4 218.6L336 373.1C326.6 382.4 311.4 382.4 302.1 373.1L256 327L186.4 396.6C177.1 405.9 161.9 405.9 152.6 396.6z" />
+                            </svg>
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Trending
+                            </span>
+                        </a>
+                    </li>
+                    <!-- Menu Item Trending -->
+
                     <!-- Menu Item Device Management -->
                     <li>
                         <a href="{{ route('devices.index') }}"

@@ -6,6 +6,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceReadingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TerminalController;
+use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/overview', [DashboardController::class, 'overview'])->name('dashboard.overview');
     Route::get('/logs', [DeviceReadingController::class, 'index'])->name('logs.index');
     Route::post('/logs/filter', [DeviceReadingController::class, 'filter'])->name('logs.filter');
+    Route::get('/trending', [TrendingController::class, 'index'])->name('trending.index');
     Route::resource('terminals', TerminalController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('areas', AreaController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('devices', DeviceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
