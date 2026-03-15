@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
-use App\Models\Area;
 use App\Models\Device;
-use App\Models\Terminal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class DeviceController extends Controller
 {
@@ -18,12 +15,9 @@ class DeviceController extends Controller
      */
     public function index()
     {
-        $terminals = Terminal::pluck('name', 'id');
-        $devices = Device::with(['area.terminal']) // ambil terminal lewat area
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $devices = Device::orderBy('created_at', 'desc')->get();
 
-        return view('pages.devices.index', compact('devices', 'terminals'));
+        return view('pages.devices.index', compact('devices'));
     }
 
     /**
@@ -71,13 +65,9 @@ class DeviceController extends Controller
      */
     public function edit(string $id)
     {
-        $terminals = Terminal::pluck('name', 'id');
-        $device = Device::with(['area.terminal'])
-            ->orderBy('created_at', 'desc')
-            ->where('id', $id)
-            ->first();
+        $device = Device::findOrFail($id);
 
-        return view('pages.devices.edit', compact('device', 'terminals'));
+        return view('pages.devices.edit', compact('device'));
     }
 
     /**

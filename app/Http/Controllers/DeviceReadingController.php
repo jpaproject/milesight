@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDeviceReadingRequest​;
-use App\Models\Area;
 use App\Models\Device;
 use App\Models\DeviceReading;
 use Carbon\Carbon;
@@ -16,14 +15,7 @@ class DeviceReadingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DeviceReading::with(['area', 'device']);
-
-        $areaId = $request->query('area_id');
-        if ($request->filled('area_id') && $areaId !== 'all') {
-            $query->whereHas('area', function ($q) use ($areaId) {
-                $q->where('name', $areaId);
-            });
-        }
+        $query = DeviceReading::with('device');
 
         $hasDateFilter =
             $request->filled('start_date') ||
@@ -45,8 +37,6 @@ class DeviceReadingController extends Controller
         }
 
         $logs = $query->orderBy('received_at', 'desc')->get();
-        $areas = Area::with('terminal')->get();
-
         if ($request->ajax()) {
             try {
                 $html = view('partials.logs-table-rows', compact('logs'))->render();
@@ -65,7 +55,7 @@ class DeviceReadingController extends Controller
             }
         }
 
-        return view('pages.logs.index', compact('logs', 'areas', 'showingToday'));
+        return view('pages.logs.index', compact('logs', 'showingToday'));
     }
 
 
@@ -73,13 +63,6 @@ class DeviceReadingController extends Controller
     public function filter(Request $request)
     {
         $query = DeviceReading::with(['area', 'device']);
-
-        // Apply filters
-        if ($request->filled('area')) {
-            $query->whereHas('area', function ($q) use ($request) {
-                $q->where('name', $request->area);
-            });
-        }
 
         if ($request->filled('start_date')) {
             $query->whereDate('received_at', '>=', $request->start_date);
@@ -107,7 +90,6 @@ class DeviceReadingController extends Controller
             'data' => $logs->map(function ($log, $index) {
                 return [
                     'no' => $index + 1,
-                    'area_name' => $log->area->name,
                     'device_name' => $log->device->name,
                     'battery' => $log->battery,
                     'temperature' => $log->temperature,

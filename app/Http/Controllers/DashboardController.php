@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
 use App\Models\Device;
-use App\Models\Terminal;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -15,13 +13,13 @@ class DashboardController extends Controller
 
     public function overview()
     {
-        return view('pages.dashboard.overview');
+        return redirect()->route('dashboard.index');
     }
 
     public function index()
     {
-        $terminals = Terminal::pluck('name', 'id');
-        return view('pages.dashboard.index', compact('terminals'));
+        $devices = Device::orderBy('created_at', 'desc')->get();
+        return view('pages.dashboard.index', compact('devices'));
     }
 
     /**
@@ -45,10 +43,7 @@ class DashboardController extends Controller
      */
     public function show(string $id)
     {
-        $terminal = Terminal::with([
-            'areas.devices'
-        ])->where('id', $id)->firstOrFail();
-        return view('pages.dashboard.show-by-terminal', compact('terminal'));
+        return redirect()->route('dashboard.index');
     }
 
     /**

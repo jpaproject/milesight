@@ -222,21 +222,6 @@
         <form id="filterForm" method="GET" action="{{ route('logs.index') }}">
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="areaFilter">
-                        <i class="fas fa-map-marker-alt mr-1"></i>Area
-                    </label>
-                    <select id="areaFilter" name="area_id">
-                        <option value="all">All Areas</option>
-                        @foreach ($areas as $area)
-                            <option value="{{ $area->name }}"
-                                {{ request('area_id') == $area->name ? 'selected' : '' }}>
-                                {{ $area->terminal->name }} - {{ $area->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="filter-group">
                     <label for="startDate">
                         <i class="fas fa-calendar-alt mr-1"></i>Start Date
                     </label>
@@ -277,8 +262,7 @@
                 <div class="text-sm text-blue-700 dark:text-blue-300">
                     <strong>Filter Guide:</strong>
                     <ul class="mt-1 space-y-1">
-                        <li>• <strong>Backend Filters</strong> (Area, Date Range): Filters data from server - affects
-                            what data is loaded</li>
+                        <li>• <strong>Backend Filters</strong> (Date Range): Filters data from server - affects what data is loaded</li>
                         <li>• <strong>Search Box</strong>: Searches within currently loaded data only</li>
                         <li>• Default view shows today's data only. Use filters to see other dates</li>
                     </ul>
@@ -324,9 +308,6 @@
                                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">
                                 No</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-28">
-                                Area Name</th>
-                            <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Device Name</th>
                             <th scope="col"
@@ -345,15 +326,10 @@
                     </thead>
                     <tbody class="bg-white dark:bg-transparent">
                         @foreach ($logs as $index => $log)
-                            <tr class="hover:bg-gray-50 transition-colors" data-area="{{ $log->area->name }}"
-                                data-device="{{ $log->device->name }}">
+                            <tr class="hover:bg-gray-50 transition-colors" data-device="{{ $log->device->name }}">
                                 <td
                                     class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center dark:text-white">
                                     {{ $index + 1 }}
-                                </td>
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
-                                    {{ $log->area->name }}
                                 </td>
                                 <td
                                     class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
@@ -422,7 +398,7 @@
                         [10, 25, 50, 100, "All"]
                     ],
                     order: [
-                        [6, 'desc']
+                        [5, 'desc']
                     ],
                     columnDefs: [{
                         targets: [0],
@@ -440,14 +416,14 @@
                                 extend: 'copy',
                                 text: '📋 Copy to clipboard',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4, 5, 6]
+                                    columns: [1, 2, 3, 4, 5]
                                 }
                             },
                             {
                                 extend: 'excel',
                                 text: '📄 Export as Excel',
                                 exportOptions: {
-                                    columns: [1, 2, 3, 4, 5, 6]
+                                    columns: [1, 2, 3, 4, 5]
                                 }
                             },
                             {
@@ -456,14 +432,14 @@
                                 orientation: 'landscape',
                                 pageSize: 'A4',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6]
+                                    columns: [0, 1, 2, 3, 4, 5]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '🖨️ Print',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6]
+                                    columns: [0, 1, 2, 3, 4, 5]
                                 }
                             }
                         ]
@@ -489,16 +465,13 @@
                     var url = new URL(window.location.href);
 
                     // Clear existing parameters
-                    url.searchParams.delete('area_id');
                     url.searchParams.delete('start_date');
                     url.searchParams.delete('end_date');
 
                     // Add new parameters
-                    var areaFilter = $('#areaFilter').val();
                     var startDate = $('#startDate').val();
                     var endDate = $('#endDate').val();
 
-                    if (areaFilter) url.searchParams.set('area_id', areaFilter);
                     if (startDate) url.searchParams.set('start_date', startDate);
                     if (endDate) url.searchParams.set('end_date', endDate);
 
@@ -509,9 +482,6 @@
                 function updateFilterStatus() {
                     var activeFilters = [];
 
-                    if ($('#areaFilter').val()) {
-                        activeFilters.push('Area: ' + $('#areaFilter option:selected').text());
-                    }
                     if ($('#startDate').val()) {
                         activeFilters.push('From: ' + $('#startDate').val());
                     }
@@ -540,15 +510,8 @@
                     var url = new URL(window.location.href);
 
                     // Update URL parameters
-                    var areaFilter = $('#areaFilter').val();
                     var startDate = $('#startDate').val();
                     var endDate = $('#endDate').val();
-
-                    if (areaFilter) {
-                        url.searchParams.set('area_id', areaFilter);
-                    } else {
-                        url.searchParams.delete('area_id');
-                    }
 
                     if (startDate) {
                         url.searchParams.set('start_date', startDate);
@@ -580,9 +543,6 @@
                 function restoreFiltersFromURL() {
                     var urlParams = new URLSearchParams(window.location.search);
 
-                    if (urlParams.get('area_id')) {
-                        $('#areaFilter').val(urlParams.get('area_id'));
-                    }
                     if (urlParams.get('start_date')) {
                         $('#startDate').val(urlParams.get('start_date'));
                     }
