@@ -78,10 +78,63 @@
                     transform: translateY(0);
                 }
             }
+
+            .status-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 4px 10px;
+                border-radius: 9999px;
+                font-size: 12px;
+                font-weight: 600;
+                border: 1px solid transparent;
+            }
+
+            .status-live {
+                color: #166534;
+                background: #dcfce7;
+                border-color: #86efac;
+            }
+
+            .status-stale {
+                color: #991b1b;
+                background: #fee2e2;
+                border-color: #fecaca;
+            }
+
+            .status-disconnected {
+                color: #374151;
+                background: #e5e7eb;
+                border-color: #d1d5db;
+            }
+
+            .status-waiting {
+                color: #1f2937;
+                background: #f3f4f6;
+                border-color: #e5e7eb;
+            }
+
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 9999px;
+                background: currentColor;
+            }
         </style>
     @endpush
 
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Dashboard</h2>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Dashboard</h2>
+        <div class="flex items-center gap-3">
+            <span id="realtimeStatus" class="status-pill status-waiting">
+                <span class="status-dot"></span>
+                <span class="status-text">Waiting</span>
+            </span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+                Last update: <span id="lastUpdate">—</span>
+            </span>
+        </div>
+    </div>
 
     <div class="mt-5">
         <div class="search-container flex justify-start md:justify-end mb-4">
@@ -117,11 +170,11 @@
                             class="device-name font-medium text-gray-900 dark:text-white text-sm mb-4 leading-tight break-words">
                             {{ $device->name }}
                         </h3>
-                        <span
+                        {{-- <span
                             class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
                             {{ $device->is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200' }}">
                             {{ $device->is_active ? 'Active' : 'Inactive' }}
-                        </span>
+                        </span> --}}
                     </div>
 
                     <div class="space-y-3">
@@ -163,7 +216,7 @@
                                 <span class="text-gray-600">🕒</span>
                                 <span class="text-sm font-medium text-gray-700">Timestamp</span>
                             </div>
-                            <span class="timestamp-value text-sm font-bold text-gray-600">00:00:00</span>
+                            <span class="timestamp-value text-sm font-bold text-gray-600">—</span>
                         </div>
                     </div>
                 </div>
@@ -188,12 +241,16 @@
         <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                const STALE_MS = 5 * 60 * 1000;
+                let socketConnected = false;
+                let lastGlobalUpdate = null;
+
                 // Initialize device loading states
                 document.querySelectorAll('[id^="device-"]').forEach(card => {
-                    card.querySelector('.battery-value').innerText = 'Loading...';
-                    card.querySelector('.temperature-value').innerText = 'Loading...';
-                    card.querySelector('.humidity-value').innerText = 'Loading...';
-                    card.querySelector('.timestamp-value').innerText = 'Loading...';
+                    card.querySelector('.battery-value').innerText = 'No data';
+                    card.querySelector('.temperature-value').innerText = 'No data';
+                    card.querySelector('.humidity-value').innerText = 'No data';
+                    card.querySelector('.timestamp-value').innerText = '—';
                 });
 
                 // Search functionality
@@ -249,6 +306,54 @@
                     }
                 });
 
+                function setStatusPill(el, status, text) {
+                    el.classList.remove('status-live', 'status-stale', 'status-disconnected', 'status-waiting');
+                    el.classList.add(status);
+                    const label = el.querySelector('.status-text');
+                    if (label) label.textContent = text;
+                }
+
+                function formatLastUpdate(date) {
+                    return date.toLocaleString('en-CA', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).replace(',', '');
+                }
+
+                function updateGlobalStatus() {
+                    const statusEl = document.getElementById('realtimeStatus');
+                    const lastUpdateEl = document.getElementById('lastUpdate');
+                    if (!statusEl || !lastUpdateEl) return;
+
+                    if (!socketConnected) {
+                        setStatusPill(statusEl, 'status-disconnected', 'Disconnected');
+                        return;
+                    }
+
+                    if (!lastGlobalUpdate) {
+                        setStatusPill(statusEl, 'status-waiting', 'No data');
+                        return;
+                    }
+
+                    const diff = Date.now() - lastGlobalUpdate.getTime();
+                    if (diff > STALE_MS) {
+                        setStatusPill(statusEl, 'status-stale', 'Stale');
+                    } else {
+                        setStatusPill(statusEl, 'status-live', 'Live');
+                    }
+
+                    lastUpdateEl.textContent = formatLastUpdate(lastGlobalUpdate);
+                }
+
+                function refreshAllStatuses() {
+                    updateGlobalStatus();
+                }
+
                 // Socket.IO connection
                 const socket = io("{{ env('WEBSOCKET_SERVER_URL') }}", {
                     transports: ['websocket', 'polling'],
@@ -261,20 +366,28 @@
 
                 socket.on('connect', () => {
                     console.log('Socket.IO Connected successfully');
+                    socketConnected = true;
+                    updateGlobalStatus();
                 });
 
                 socket.on('disconnect', () => {
                     console.log('Socket.IO Disconnected');
+                    socketConnected = false;
+                    updateGlobalStatus();
                 });
 
                 socket.on('connect_error', (error) => {
                     console.error('Connection error:', error);
+                    socketConnected = false;
+                    updateGlobalStatus();
                 });
 
                 socket.on('sensor_data', function(data) {
                     const card = document.getElementById(`device-${data.deviceName}`);
 
                     if (card) {
+                        lastGlobalUpdate = new Date();
+
                         if (data.battery !== undefined) {
                             card.querySelector('.battery-value').innerText = `${data.battery}%`;
                         } else {
@@ -304,15 +417,6 @@
                                 minute: '2-digit',
                                 hour12: false
                             }).replace(',', '');
-
-                            const now = new Date();
-                            const diffHours = (now - date) / (1000 * 60 * 60);
-
-                            if (diffHours > 1) {
-                                tsElement.classList.add('blinking-red');
-                            } else {
-                                tsElement.classList.remove('blinking-red');
-                            }
                         }
 
                         const batteryBg = card.querySelector('.battery');
@@ -337,6 +441,8 @@
                             batteryFill.style.width = "0%";
                             batteryValue.className = "battery-value text-sm font-bold text-gray-400";
                         }
+
+                        updateGlobalStatus();
                     }
                 });
 
@@ -357,6 +463,9 @@
                         fill: "bg-red-500 dark:bg-red-400"
                     };
                 }
+
+                refreshAllStatuses();
+                setInterval(refreshAllStatuses, 30 * 1000);
             })
         </script>
     @endpush

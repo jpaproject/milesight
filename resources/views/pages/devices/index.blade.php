@@ -83,9 +83,6 @@
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Device Name</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Status</th>
-                        <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
                             Action</th>
                     </tr>
@@ -99,10 +96,6 @@
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center dark:text-white">
                                 {{ $device->name }}
-                            </td>
-                            <td
-                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center dark:text-white capitalize">
-                                {{ $device->is_active ? 'Active' : 'Inactive' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
@@ -145,6 +138,7 @@
 
                 <form method="POST" action={{ route('devices.store') }} class="p-6 space-y-4">
                     @csrf
+                    <input type="hidden" name="is_active" value="1">
                     <h2 class="text-md font-semibold text-gray-800 dark:text-white">Create New Device</h2>
 
                     @error('error')
@@ -159,17 +153,6 @@
                         <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
                             :value="old('name')" required autofocus autocomplete="name" placeholder="Enter the name" />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <x-input-label for="is_active" :value="__('Status')" required class="text-xs" />
-                        <select name="is_active" id="is_active"
-                            class="form-input w-full px-4 py-2.5 transition-all duration-200 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>✅ Active</option>
-                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>⛔ Inactive
-                            </option>
-                        </select>
-                        <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end space-x-3 pt-4">
@@ -254,7 +237,7 @@
                             className: 'text-center'
                         },
                         {
-                            targets: [3], // Aksi
+                            targets: [2], // Aksi
                             orderable: false,
                             searchable: false,
                             className: 'text-center'
@@ -273,14 +256,14 @@
                                 extend: 'copy',
                                 text: '📋 Copy to clipboard',
                                 exportOptions: {
-                                    columns: [1, 2]
+                                    columns: [1]
                                 }
                             },
                             {
                                 extend: 'excel',
                                 text: '📄 Export as Excel',
                                 exportOptions: {
-                                    columns: [1, 2]
+                                    columns: [1]
                                 }
                             },
                             {
@@ -289,14 +272,14 @@
                                 orientation: 'landscape',
                                 pageSize: 'A4',
                                 exportOptions: {
-                                    columns: [1, 2]
+                                    columns: [1]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '🖨️ Print',
                                 exportOptions: {
-                                    columns: [1, 2]
+                                    columns: [1]
                                 }
                             }
                         ]
