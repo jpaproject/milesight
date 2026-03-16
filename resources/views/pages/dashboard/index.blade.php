@@ -386,7 +386,12 @@
                     const card = document.getElementById(`device-${data.deviceName}`);
 
                     if (card) {
-                        lastGlobalUpdate = new Date();
+                        const receivedAt = data.receivedAt ? new Date(data.receivedAt) : null;
+                        if (receivedAt && !isNaN(receivedAt)) {
+                            lastGlobalUpdate = receivedAt;
+                        } else {
+                            lastGlobalUpdate = new Date();
+                        }
 
                         if (data.battery !== undefined) {
                             card.querySelector('.battery-value').innerText = `${data.battery}%`;
