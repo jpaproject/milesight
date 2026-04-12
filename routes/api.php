@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LogController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\TrendingController as ApiTrendingController;
 use App\Http\Controllers\Api\DeviceController as ApiDeviceController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceReadingController;
@@ -34,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/devices', [LogController::class, 'devices']);
         Route::get('/export', [LogController::class, 'export']);
     });
+
+    // Trending Sub-system
+    Route::get('/trending', [ApiTrendingController::class, 'index']);
 });
 
 Route::middleware('auth.api-key')->group(function () {
