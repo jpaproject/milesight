@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LogController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\DeviceController as ApiDeviceController;
 use App\Http\Controllers\DeviceController;
@@ -25,6 +26,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('member')->group(function () {
         Route::put('/profile', [ProfileController::class, 'updateProfileJson']);
         Route::put('/password', [ProfileController::class, 'updatePassword']);
+    });
+
+    // Logs Sub-system
+    Route::prefix('logs')->group(function () {
+        Route::get('/', [LogController::class, 'index']);
+        Route::get('/devices', [LogController::class, 'devices']);
     });
 });
 
