@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('logs')->group(function () {
         Route::get('/', [LogController::class, 'index']);
         Route::get('/devices', [LogController::class, 'devices']);
+        Route::get('/export', [LogController::class, 'export']);
     });
 });
 

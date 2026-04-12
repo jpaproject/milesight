@@ -8,6 +8,7 @@ use App\Models\DeviceReading;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
@@ -94,5 +95,66 @@ class LogController extends Controller
             'message' => 'Device list retrieved.',
             'data'    => $devices,
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        $query = DeviceReading::with('device:id,name');
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('received_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('received_at', '<=', $request->end_date);
+        }
+
+        $fileName = "ThermIQ_Logs_" . now()->format('Ymd_His') . ".xls";
+
+        $headers = [
+            "Content-Type"        => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () use ($query) {
+            echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+            echo '<?mso-application progid="Excel.Sheet"?>' . "\n";
+            echo '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"' . "\n";
+            echo ' xmlns:o="urn:schemas-microsoft-com:office:office"' . "\n";
+            echo ' xmlns:x="urn:schemas-microsoft-com:office:excel"' . "\n";
+            echo ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"' . "\n";
+            echo ' xmlns:html="http://www.w3.org/TR/REC-html40">' . "\n";
+            echo ' <Worksheet ss:Name="Sensor Logs">' . "\n";
+            echo '  <Table>' . "\n";
+
+            // Headers
+            echo '   <Row>' . "\n";
+            $columns = ['Device Name', 'Battery', 'Temperature', 'Humidity', 'Received At'];
+            foreach ($columns as $col) {
+                echo '    <Cell><Data ss:Type="String">' . htmlspecialchars($col) . '</Data></Cell>' . "\n";
+            }
+            echo '   </Row>' . "\n";
+
+            $query->orderBy('received_at', 'desc')->chunk(500, function ($readings) {
+                foreach ($readings as $reading) {
+                    echo '   <Row>' . "\n";
+                    echo '    <Cell><Data ss:Type="String">' . htmlspecialchars($reading->device ? $reading->device->name : 'Unknown') . '</Data></Cell>' . "\n";
+                    echo '    <Cell><Data ss:Type="String">' . ($reading->battery !== null ? $reading->battery . '%' : '-') . '</Data></Cell>' . "\n";
+                    echo '    <Cell><Data ss:Type="String">' . ($reading->temperature !== null ? $reading->temperature . '°C' : '-') . '</Data></Cell>' . "\n";
+                    echo '    <Cell><Data ss:Type="String">' . ($reading->humidity !== null ? $reading->humidity . '%' : '-') . '</Data></Cell>' . "\n";
+                    echo '    <Cell><Data ss:Type="String">' . ($reading->received_at ? Carbon::parse($reading->received_at)->format('Y-m-d H:i:s') : '-') . '</Data></Cell>' . "\n";
+                    echo '   </Row>' . "\n";
+                }
+            });
+
+            echo '  </Table>' . "\n";
+            echo ' </Worksheet>' . "\n";
+            echo '</Workbook>' . "\n";
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
