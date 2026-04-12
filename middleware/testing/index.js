@@ -2,7 +2,8 @@ const mqtt = require("mqtt");
 
 // === Konfigurasi MQTT Broker ===
 const brokerUrl = "mqtt://public.grootech.id:1883";
-const topic = "AP2/T1/Data";
+// const topic = "AP2/T1/Data";
+const topic = "sensor/ambience";
 
 const deviceNames = [
     "SENSOR-1",
