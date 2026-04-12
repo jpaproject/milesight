@@ -22,4 +22,14 @@ class Device extends Model
     {
         return $this->hasMany(DeviceReading::class);
     }
+
+    /**
+     * Relasi ke reading terakhir berdasarkan received_at.
+     * Digunakan oleh API mobile untuk mengambil snapshot terkini setiap device.
+     */
+    public function latestReading()
+    {
+        return $this->hasOne(DeviceReading::class)
+            ->latestOfMany('received_at');
+    }
 }

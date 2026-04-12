@@ -34,7 +34,9 @@ io.on("connection", (socket) => {
     }
 
     if (lastOverviewPayload) {
-        console.log(`📦 Mengirim data overview terakhir ke client ${socket.id}`);
+        console.log(
+            `📦 Mengirim data overview terakhir ke client ${socket.id}`,
+        );
         socket.emit("dashboard_overview_update", lastOverviewPayload);
     }
 
@@ -56,7 +58,7 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("sensor_data", data);
     });
 
-     // Handle data overview yang sudah diagregasi
+    // Handle data overview yang sudah diagregasi
     socket.on("overview_data", (payload) => {
         console.log("📊 Menerima data overview agregat.");
         lastOverviewPayload = payload;
