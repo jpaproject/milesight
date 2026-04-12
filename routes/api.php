@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\DeviceController as ApiDeviceController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceReadingController;
@@ -19,6 +20,12 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/devices/latest', [ApiDeviceController::class, 'latestReadings']);
+    
+    // Member Profile Sub-system
+    Route::prefix('member')->group(function () {
+        Route::put('/profile', [ProfileController::class, 'updateProfileJson']);
+        Route::put('/password', [ProfileController::class, 'updatePassword']);
+    });
 });
 
 Route::middleware('auth.api-key')->group(function () {
